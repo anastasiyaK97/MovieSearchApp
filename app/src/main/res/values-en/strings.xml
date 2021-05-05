@@ -9,4 +9,8 @@
     <string name="Cancel">Cancel</string>
     <string name="film_nav_title">Films</string>
     <string name="favorites_nav_title">Favorites</string>
+
+    <string name="like_film_snackbar_text">Film was added to favorites</string>
+    <string name="unlike_film_snackbar_text">Film was removed from favorites</string>
+    <string name="Undo">Undo</string>
 </resources>

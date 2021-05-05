@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment
 import com.example.moviesearchapplication.R
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), OnFilmClickListener {
 
     companion object {
         const val TAG = "LOG_TAG"
@@ -19,11 +19,16 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        setSupportActionBar(findViewById(R.id.toolbar))
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
+        initToolbar()
         loadFragment(MainFilmsFragment())
+        initBottomNavigation()
+    }
 
+    private fun initToolbar(){
+        setSupportActionBar(findViewById(R.id.toolbar))
+    }
+
+    private fun initBottomNavigation(){
         val navigate = findViewById<BottomNavigationView>(R.id.bottom_navigation)
         navigate.setOnNavigationItemSelectedListener{
             when (it.itemId) {
@@ -73,6 +78,20 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        ExitDialog {super.onBackPressed()}.show(supportFragmentManager, "dialog")
+        if (supportFragmentManager.backStackEntryCount >  0) {
+            supportFragmentManager.popBackStack()
+        } else {
+            ExitDialog {super.onBackPressed()}.show(supportFragmentManager, "dialog")
+        }
     }
+
+    override fun onClick(itemId : Int) {
+        supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.fragment_placeholder, FilmDetailFragment.newInstance(itemId))
+            .addToBackStack("")
+            .commit()
+    }
+
+
 }

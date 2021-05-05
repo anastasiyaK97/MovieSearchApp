@@ -8,4 +8,9 @@
     <string name="Cancel">Отмена</string>
     <string name="film_nav_title">Фильмы</string>
     <string name="favorites_nav_title">Избранные</string>
+
+    <string name="like_film_snackbar_text">Фильм добавлен в избранное</string>
+    <string name="unlike_film_snackbar_text">Фильм удален из избранного</string>
+    <string name="Undo">Отмена</string>
+
 </resources>

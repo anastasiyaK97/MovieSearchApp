@@ -3,4 +3,6 @@
     <dimen name="text_padding">8dp</dimen>
     <dimen name="button_text_size">12sp</dimen>
     <dimen name="text_margin">16dp</dimen>
+
+    <dimen name="image_height">500dp</dimen>
 </resources>

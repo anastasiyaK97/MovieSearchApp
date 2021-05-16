@@ -1,12 +1,14 @@
-package com.example.moviesearchapplication.view
+package com.example.moviesearchapplication.view.main
 
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -14,12 +16,21 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.moviesearchapplication.App
 import com.example.moviesearchapplication.R
-import com.example.moviesearchapplication.data.Film
 import com.example.moviesearchapplication.data.FilmRepository
+import com.example.moviesearchapplication.data.database.Database
+import com.example.moviesearchapplication.data.model.Film
+import com.example.moviesearchapplication.view.OnFilmClickListener
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.snackbar.Snackbar
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import java.util.concurrent.Executors
+
+const val TAG = "LOG_TAG"
 
 class MainFilmsFragment : Fragment() {
 
@@ -73,9 +84,31 @@ class MainFilmsFragment : Fragment() {
                         GridLayoutManager(context, 2)
                     }
 
-                val films: ArrayList<Film> = FilmRepository.filmCollection
+                App.instance.filmApiService.getFilms()
+                    .enqueue(object: Callback<List<Film>> {
+                        override fun onFailure(call: Call<List<Film>>, t: Throwable) {
+                            Toast.makeText(requireActivity(), "Request error", Toast.LENGTH_SHORT).show()
+                        }
+
+                        override fun onResponse(call: Call<List<Film>>, response: Response<List<Film>>) {
+                            FilmRepository.filmCollection.clear()
+                            if (response.isSuccessful) {
+                                response.body()?.forEach {
+                                    FilmRepository.filmCollection.add(it)
+                                    Executors.newSingleThreadScheduledExecutor().execute{
+                                        Database.getInstance(requireContext()).getFilmDao().insert(it)
+                                        Log.d(TAG, "${it.title} (${it.id}) was inserted to DB")
+                                    }
+                                }
+                            }
+                            adapter?.notifyDataSetChanged()
+                        }
+                    })
+
+                val films: MutableList<Film> = FilmRepository.filmCollection
                 adapter =
-                    FilmRecyclerViewAdapter(films,
+                    FilmRecyclerViewAdapter(
+                        films,
                         clickListener = { filmItem, _ ->
                             clickListener?.onClick(filmItem.id)
                         },
@@ -95,7 +128,10 @@ class MainFilmsFragment : Fragment() {
                     )
 
                 val filmDecoration =
-                    CustomDecorator(requireContext(), DividerItemDecoration.VERTICAL)
+                    CustomDecorator(
+                        requireContext(),
+                        DividerItemDecoration.VERTICAL
+                    )
                 ContextCompat.getDrawable(requireActivity(), R.drawable.line_2dp)?.let {
                     filmDecoration.setDrawable(it)
                 }

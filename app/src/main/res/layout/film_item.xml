@@ -8,8 +8,8 @@
 
     <ImageView
         android:id="@+id/poster"
-        android:layout_width="100dp"
-        android:layout_height="130dp"
+        android:layout_width="@dimen/poster_width"
+        android:layout_height="@dimen/poster_height"
         android:layout_margin="10dp"
         android:adjustViewBounds="true"
         app:layout_constraintBottom_toBottomOf="parent"

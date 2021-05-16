@@ -1,4 +1,4 @@
-package com.example.moviesearchapplication.view
+package com.example.moviesearchapplication.view.main
 
 import android.view.LayoutInflater
 import android.view.View
@@ -6,8 +6,9 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.moviesearchapplication.R
-import com.example.moviesearchapplication.data.Film
+import com.example.moviesearchapplication.data.model.Film
 
 class FilmRecyclerViewAdapter(private val filmList: List<Film>,
                               private val clickListener: (item: Film, position: Int) -> Unit,
@@ -43,9 +44,16 @@ class FilmRecyclerViewAdapter(private val filmList: List<Film>,
         private val likeIV: ImageView = view.findViewById(R.id.like)
 
         fun bind(item : Film) {
-            nameTV.text = item.name
-            genreTV.text = item.descr
-            posterIV.setImageResource(item.imageID)
+            nameTV.text = item.title
+            genreTV.text = item.originalTitle
+            //posterIV.setImageResource(item.imageID)
+            //posterIV.setImageResource(R.drawable.interstellar)
+            Glide.with(posterIV.context)
+                .load(item.posterLink)
+                .placeholder(R.drawable.ic_image)
+                .error(R.drawable.ic_broken_image)
+                .override(posterIV.resources.getDimensionPixelSize(R.dimen.poster_width), posterIV.resources.getDimensionPixelSize(R.dimen.poster_height))
+                .into(posterIV)
 
             if (item.isFavorite) {
                 likeIV.setImageResource(R.drawable.ic_favorite_light)

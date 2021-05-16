@@ -1,4 +1,4 @@
-package com.example.moviesearchapplication.view
+package com.example.moviesearchapplication.view.main
 
 import android.content.Context
 import android.os.Bundle
@@ -13,8 +13,9 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.moviesearchapplication.R
-import com.example.moviesearchapplication.data.Film
 import com.example.moviesearchapplication.data.FilmRepository
+import com.example.moviesearchapplication.data.model.Film
+import com.example.moviesearchapplication.view.OnFilmClickListener
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.snackbar.Snackbar
@@ -61,28 +62,41 @@ class FavoriteFilmsFragment : Fragment() {
                 recycler = this
                 layoutManager = LinearLayoutManager(context)
                 val favoriteFilms : ArrayList<Film> = FilmRepository.getFavoriteFilms()
-                adapter = FilmRecyclerViewAdapter (favoriteFilms,
-                    clickListener = {
-                        filmItem, _ ->
-                        clickListener?.onClick(filmItem.id)
-                    },
-                    likeClickListener = {
-                        filmItem, position ->
-                        filmItem.isFavorite = !filmItem.isFavorite
-                        favoriteFilms.remove(filmItem)
-                        this.adapter?.notifyItemRemoved(position)
-                        this.adapter?.notifyItemRangeChanged(position, favoriteFilms.size - position)
-                        Snackbar.make(this, R.string.unlike_film_snackbar_text, Snackbar.LENGTH_SHORT).apply {
-                            setAction(R.string.Undo) {
-                                filmItem.isFavorite = !filmItem.isFavorite
-                                favoriteFilms.add(position, filmItem)
-                                this@with.adapter?.notifyItemInserted(position)
-                                this@with.adapter?.notifyItemRangeChanged(
-                                position,favoriteFilms.size - position)
-                            }}.show()
-                    }
-                )
-                val filmDecoration = CustomDecorator(requireContext(), DividerItemDecoration.VERTICAL)
+                adapter =
+                    FilmRecyclerViewAdapter(
+                        favoriteFilms,
+                        clickListener = { filmItem, _ ->
+                            clickListener?.onClick(filmItem.id)
+                        },
+                        likeClickListener = { filmItem, position ->
+                            filmItem.isFavorite = !filmItem.isFavorite
+                            favoriteFilms.remove(filmItem)
+                            this.adapter?.notifyItemRemoved(position)
+                            this.adapter?.notifyItemRangeChanged(
+                                position,
+                                favoriteFilms.size - position
+                            )
+                            Snackbar.make(
+                                this,
+                                R.string.unlike_film_snackbar_text,
+                                Snackbar.LENGTH_SHORT
+                            ).apply {
+                                setAction(R.string.Undo) {
+                                    filmItem.isFavorite = !filmItem.isFavorite
+                                    favoriteFilms.add(position, filmItem)
+                                    this@with.adapter?.notifyItemInserted(position)
+                                    this@with.adapter?.notifyItemRangeChanged(
+                                        position, favoriteFilms.size - position
+                                    )
+                                }
+                            }.show()
+                        }
+                    )
+                val filmDecoration =
+                    CustomDecorator(
+                        requireContext(),
+                        DividerItemDecoration.VERTICAL
+                    )
                 ContextCompat.getDrawable(requireActivity(), R.drawable.line_2dp)?.let {
                     filmDecoration.setDrawable(it)
                 }
@@ -93,7 +107,7 @@ class FavoriteFilmsFragment : Fragment() {
                 //добавляется пустой holder (без данных).
                 // Не понимаю почему......
 
-               /* val animator = FilmItemAnimator(requireContext())
+                /*val animator = FilmItemAnimator(requireContext())
                 itemAnimator = animator*/
             }
         }

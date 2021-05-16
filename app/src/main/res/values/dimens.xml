@@ -4,5 +4,10 @@
     <dimen name="button_text_size">12sp</dimen>
     <dimen name="text_margin">16dp</dimen>
 
-    <dimen name="image_height">500dp</dimen>
+    <dimen name="expanded_image_height">400dp</dimen>
+
+    <!-- Poster (imageView) sizes in the recyclerView-->
+    <dimen name="poster_height">130dp</dimen>
+    <dimen name="poster_width">100dp</dimen>
+
 </resources>

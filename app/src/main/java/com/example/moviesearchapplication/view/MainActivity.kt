@@ -4,10 +4,11 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.moviesearchapplication.R
+import com.example.moviesearchapplication.view.main.FavoriteFilmsFragment
+import com.example.moviesearchapplication.view.main.MainFilmsFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity(), OnFilmClickListener {
@@ -33,11 +34,9 @@ class MainActivity : AppCompatActivity(), OnFilmClickListener {
         navigate.setOnNavigationItemSelectedListener{
             when (it.itemId) {
                 R.id.nav_main -> {
-                    Toast.makeText(this,"Main", Toast.LENGTH_SHORT).show()
                     loadFragment(MainFilmsFragment())
                 }
                 R.id.nav_favorite -> {
-                    Toast.makeText(this,"Favorite", Toast.LENGTH_SHORT).show()
                     loadFragment(FavoriteFilmsFragment())
                 }
             }
@@ -81,7 +80,8 @@ class MainActivity : AppCompatActivity(), OnFilmClickListener {
         if (supportFragmentManager.backStackEntryCount >  0) {
             supportFragmentManager.popBackStack()
         } else {
-            ExitDialog {super.onBackPressed()}.show(supportFragmentManager, "dialog")
+            ExitDialog (exitAction = {super.onBackPressed()})
+                .show(supportFragmentManager, "dialog")
         }
     }
 

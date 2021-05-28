@@ -1,7 +1,7 @@
-package com.example.moviesearchapplication.data.database
+package com.example.moviesearchapplication.frameworks.database
 
 import androidx.room.TypeConverter
-import com.example.moviesearchapplication.data.model.Genre
+import com.example.moviesearchapplication.data.model.entities.Genre
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.lang.reflect.Type

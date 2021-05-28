@@ -41,8 +41,8 @@
 
     <ImageView
         android:id="@+id/like"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
         android:layout_margin="20dp"
         android:src="@drawable/ic_favorite_light"
         app:layout_constraintBottom_toBottomOf="parent"

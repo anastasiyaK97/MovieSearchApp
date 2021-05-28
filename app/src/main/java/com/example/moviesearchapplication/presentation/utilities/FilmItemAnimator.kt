@@ -1,4 +1,4 @@
-package com.example.moviesearchapplication.view.main
+package com.example.moviesearchapplication.presentation.utilities
 
 import android.animation.Animator
 import android.animation.AnimatorInflater

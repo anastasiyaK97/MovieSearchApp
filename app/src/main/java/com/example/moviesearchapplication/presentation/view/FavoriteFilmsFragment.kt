@@ -1,4 +1,4 @@
-package com.example.moviesearchapplication.view.main
+package com.example.moviesearchapplication.presentation.view
 
 import android.content.Context
 import android.os.Bundle
@@ -9,30 +9,37 @@ import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.moviesearchapplication.R
-import com.example.moviesearchapplication.data.FilmRepository
-import com.example.moviesearchapplication.data.model.Film
-import com.example.moviesearchapplication.view.OnFilmClickListener
+import com.example.moviesearchapplication.data.model.entities.Film
+import com.example.moviesearchapplication.presentation.utilities.CustomDecorator
+import com.example.moviesearchapplication.presentation.viewmodel.FilmListViewModel
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.snackbar.Snackbar
 
 class FavoriteFilmsFragment : Fragment() {
 
+    private val viewModel: FilmListViewModel by activityViewModels()
+
     private lateinit var recycler : RecyclerView
     var clickListener: OnFilmClickListener? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.fragment_main_films_list, container, false)
-        initRecycler(view)
-        return view
+        return inflater.inflate(R.layout.fragment_main_films_list, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initToolbar()
+        initRecycler(view)
+
+        viewModel.favoriteFilms.observe(viewLifecycleOwner, Observer<List<Film>>{films ->
+            setAdapter(films)
+        })
     }
 
     override fun onAttach(context: Context) {
@@ -61,37 +68,8 @@ class FavoriteFilmsFragment : Fragment() {
             with(view){
                 recycler = this
                 layoutManager = LinearLayoutManager(context)
-                val favoriteFilms : ArrayList<Film> = FilmRepository.getFavoriteFilms()
-                adapter =
-                    FilmRecyclerViewAdapter(
-                        favoriteFilms,
-                        clickListener = { filmItem, _ ->
-                            clickListener?.onClick(filmItem.id)
-                        },
-                        likeClickListener = { filmItem, position ->
-                            filmItem.isFavorite = !filmItem.isFavorite
-                            favoriteFilms.remove(filmItem)
-                            this.adapter?.notifyItemRemoved(position)
-                            this.adapter?.notifyItemRangeChanged(
-                                position,
-                                favoriteFilms.size - position
-                            )
-                            Snackbar.make(
-                                this,
-                                R.string.unlike_film_snackbar_text,
-                                Snackbar.LENGTH_SHORT
-                            ).apply {
-                                setAction(R.string.Undo) {
-                                    filmItem.isFavorite = !filmItem.isFavorite
-                                    favoriteFilms.add(position, filmItem)
-                                    this@with.adapter?.notifyItemInserted(position)
-                                    this@with.adapter?.notifyItemRangeChanged(
-                                        position, favoriteFilms.size - position
-                                    )
-                                }
-                            }.show()
-                        }
-                    )
+                setAdapter(viewModel.favoriteFilms.value?:ArrayList())
+
                 val filmDecoration =
                     CustomDecorator(
                         requireContext(),
@@ -112,4 +90,46 @@ class FavoriteFilmsFragment : Fragment() {
             }
         }
     }
+
+    private fun setAdapter(favoriteFilms: List<Film>) {
+        recycler.adapter = FilmRecyclerViewAdapter(
+            favoriteFilms as ArrayList,
+            clickListener = itemClickListener,
+            likeClickListener = likeClickListener
+        )
+    }
+
+    // region clickListeners
+    private val likeClickListener  = object : FilmRecyclerViewAdapter.OnLikeClickListener {
+        override fun onLikeClick(filmItem: Film, position: Int) {
+            filmItem.isFavorite = !filmItem.isFavorite
+            viewModel.removeFromFavorite(filmItem)
+            recycler.adapter?.notifyItemRemoved(position)
+            recycler.adapter?.notifyItemRangeChanged(
+                position,
+                viewModel.favoriteFilms.value?.size?:position - position
+            )
+            Snackbar.make(
+                recycler,
+                R.string.unlike_film_snackbar_text,
+                Snackbar.LENGTH_SHORT
+            ).apply {
+                setAction(R.string.Undo) {
+                    filmItem.isFavorite = !filmItem.isFavorite
+                    viewModel.addToFavorite(filmItem)
+                    recycler.adapter?.notifyItemInserted(position)
+                    recycler.adapter?.notifyItemRangeChanged(
+                        position, viewModel.favoriteFilms.value?.size?:position - position
+                    )
+                }
+            }.show()
+        }
+    }
+
+    private val itemClickListener = object : FilmRecyclerViewAdapter.OnItemClickListener{
+        override fun onItemClick(filmItem: Film, position: Int) {
+            clickListener?.onClick(filmItem.id)
+        }
+    }
+    // endregion
 }

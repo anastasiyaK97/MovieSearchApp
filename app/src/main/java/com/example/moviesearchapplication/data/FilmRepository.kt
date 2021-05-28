@@ -1,38 +1,77 @@
 package com.example.moviesearchapplication.data
 
-import com.example.moviesearchapplication.data.model.Film
+import android.util.Log
+import androidx.annotation.WorkerThread
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import com.example.moviesearchapplication.App
+import com.example.moviesearchapplication.data.DTO.DataMapper.FilmMapper
+import com.example.moviesearchapplication.data.DTO.NetworkFilm
+import com.example.moviesearchapplication.data.model.entities.Film
+import com.example.moviesearchapplication.domain.FilmInteractor
+import com.example.moviesearchapplication.frameworks.database.FilmDao
+import java.util.concurrent.Executors
 
-class FilmRepository {
+const val TAG = "LOG_TAG"
 
-    companion object {
-        val filmCollection: MutableList<Film> = mutableListOf()
+class FilmRepository(private val filmDAO: FilmDao) {
 
-        /*  arrayListOf(
-          Film(0, "Интерстеллар", "2014, фантастика, драма, приключения", R.drawable.interstellar, true),
-          Film(1, "Начало", "2010, фантастика, боевик, триллер", R.drawable.inception, true),
-          Film(2, "Прибытие", "2016, фантастика, триллер, драма", R.drawable.pribyitie2, true),
-          Film(3, "Интерстеллар2", "2014, фантастика, драма, приключения", R.drawable.interstellar, true),
-          Film(4, "Начало2", "2010, фантастика, боевик, триллер", R.drawable.inception),
-          Film(5, "Прибытие2", "2016, фантастика, триллер, драма", R.drawable.pribyitie2)
-        )*/
+    val allFilms: LiveData<List<Film>> = filmDAO.getAll()
+    val favoriteFilms: LiveData<List<Film>> = filmDAO.getAllFavorite()
+    val error = MutableLiveData<String>()
 
-        fun getFilmById(id: Int): Film {
-            return filmCollection.find { film -> film.id == id } ?: filmCollection[0]
-        }
+    private val filmInteractor = App.instance.filmInteractor
+    private val filmMapper = FilmMapper()
 
-        private val favoriteFilmCollection = ArrayList<Film>()
+    private fun addToCache(collection: List<NetworkFilm>){
 
-        fun getFavoriteFilms() : ArrayList<Film> {
-            favoriteFilmCollection.clear()
-            for (item in filmCollection) {
-                if (item.isFavorite)
-                    favoriteFilmCollection.add(item)
-                else
-                    favoriteFilmCollection.remove(item)
+        Executors.newSingleThreadScheduledExecutor().execute{
+            collection.forEach{
+                filmDAO.insert(filmMapper.map(it))
+                Log.d(TAG, "${it.title} (${it.id}) was inserted to DB")
             }
-            return favoriteFilmCollection
         }
     }
+    private fun getCachedFilms() : LiveData<List<Film>> {
+        return filmDAO.getAll()
+    }
 
+    private fun requestNetworkFilms(
+        page: Int,
+        callback: PageCountCallback
+    ){
+        filmInteractor.getFilms(page, object: FilmInteractor.GetFilmCallback{
+            override fun onSuccess(pagesCount: Int, networkFilms: List<NetworkFilm>) {
+                addToCache(networkFilms)
+                callback.onSuccess(pagesCount)
+                Log.d("LOG_TAG", "request completed, totalPages = $pagesCount")
+            }
+
+            override fun onError(error: String) {
+                this@FilmRepository.error.value = error
+            }
+
+        })
+    }
+
+    @WorkerThread
+    fun getFilmById(id: Int): Film = filmDAO.getFilmById(id)
+
+    @WorkerThread
+    fun getFilms(loadedPage: Int, callback: PageCountCallback): LiveData<List<Film>> {
+        return if (filmDAO.getAll().value == null || filmDAO.getAll().value?.count() == 0)
+        {
+            requestNetworkFilms(loadedPage, callback)
+            getCachedFilms()
+        } else getCachedFilms()
+    }
+
+    fun update(film: Film) = Executors.newSingleThreadScheduledExecutor().execute{
+        filmDAO.update(film)
+    }
+
+    interface PageCountCallback {
+        fun onSuccess(count: Int)
+    }
 
 }

@@ -1,8 +1,8 @@
-package com.example.moviesearchapplication.data.database
+package com.example.moviesearchapplication.frameworks.database
 
 import androidx.room.Dao
 import androidx.room.Query
-import com.example.moviesearchapplication.data.model.Genre
+import com.example.moviesearchapplication.data.model.entities.Genre
 
 @Dao
 interface GenreDao {

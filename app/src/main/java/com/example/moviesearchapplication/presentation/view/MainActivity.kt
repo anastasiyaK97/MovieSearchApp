@@ -1,4 +1,4 @@
-package com.example.moviesearchapplication.view
+package com.example.moviesearchapplication.presentation.view
 
 import android.content.Intent
 import android.os.Bundle
@@ -7,11 +7,10 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.moviesearchapplication.R
-import com.example.moviesearchapplication.view.main.FavoriteFilmsFragment
-import com.example.moviesearchapplication.view.main.MainFilmsFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
-class MainActivity : AppCompatActivity(), OnFilmClickListener {
+class MainActivity : AppCompatActivity(),
+    OnFilmClickListener {
 
     companion object {
         const val TAG = "LOG_TAG"

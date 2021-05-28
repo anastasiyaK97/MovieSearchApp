@@ -1,4 +1,4 @@
-package com.example.moviesearchapplication.view.main
+package com.example.moviesearchapplication.presentation.view
 
 import android.view.LayoutInflater
 import android.view.View
@@ -8,12 +8,25 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.moviesearchapplication.R
-import com.example.moviesearchapplication.data.model.Film
+import com.example.moviesearchapplication.data.model.entities.Film
 
-class FilmRecyclerViewAdapter(private val filmList: List<Film>,
-                              private val clickListener: (item: Film, position: Int) -> Unit,
-                              private val likeClickListener : (item: Film, position: Int) -> Unit)
+class FilmRecyclerViewAdapter(private val filmList: ArrayList<Film>,
+                              //private val clickListener: (item: Film, position: Int) -> Unit,
+                              private val clickListener: OnItemClickListener,
+                              //private val likeClickListener : (item: Film, position: Int) -> Unit)
+                              private val likeClickListener: OnLikeClickListener
+)
     : RecyclerView.Adapter<FilmRecyclerViewAdapter.FilmViewHolder>() {
+
+    // region Interfaces
+    interface OnItemClickListener {
+        fun onItemClick(item: Film, position: Int)
+    }
+
+    interface OnLikeClickListener {
+        fun onLikeClick(item: Film, position: Int)
+    }
+    // endregion
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FilmViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -25,7 +38,7 @@ class FilmRecyclerViewAdapter(private val filmList: List<Film>,
         val film = filmList[position]
         holder.bind(film)
         holder.itemView.setOnClickListener{
-            clickListener(film, position)
+            clickListener.onItemClick(film, position)
         }
         holder.setLikeClickListener(film, position)
     }
@@ -64,7 +77,7 @@ class FilmRecyclerViewAdapter(private val filmList: List<Film>,
         }
 
         fun setLikeClickListener(item: Film, position: Int){
-            likeIV.setOnClickListener{likeClickListener(item, position)}
+            likeIV.setOnClickListener{likeClickListener.onLikeClick(item, position)}
         }
     }
 

@@ -1,4 +1,4 @@
-package com.example.moviesearchapplication.view
+package com.example.moviesearchapplication.presentation.view
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,10 +8,14 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import com.bumptech.glide.Glide
 import com.example.moviesearchapplication.R
-import com.example.moviesearchapplication.data.FilmRepository
+import com.example.moviesearchapplication.data.model.entities.Film
+import com.example.moviesearchapplication.presentation.viewmodel.FilmDetailViewModel
 import com.google.android.material.appbar.CollapsingToolbarLayout
+import java.util.concurrent.Executors
 
 class FilmDetailFragment : Fragment() {
 
@@ -29,6 +33,7 @@ class FilmDetailFragment : Fragment() {
     }
 
     private var filmId: Int = 0
+    private val viewModel: FilmDetailViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,11 +45,15 @@ class FilmDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         filmId = arguments?.getInt(FILM_ID_EXTRA) ?: 0
-        with(FilmRepository.getFilmById(filmId)) {
-            view.findViewById<TextView>(R.id.film_name).text = this.title
-            view.findViewById<TextView>(R.id.descr).text = this.originalTitle
 
-            initToolbar(this.title, this.posterLink)
+        viewModel.film.observe(viewLifecycleOwner, Observer<Film>{ film ->
+                    view.findViewById<TextView>(R.id.film_name).text = film?.title
+                    view.findViewById<TextView>(R.id.descr).text = film?.originalTitle
+
+                    initToolbar(film?.title?:"", film?.posterLink?:"")
+            })
+        Executors.newSingleThreadScheduledExecutor().execute {
+            viewModel.fillFilmViewModel(filmId)
         }
     }
 

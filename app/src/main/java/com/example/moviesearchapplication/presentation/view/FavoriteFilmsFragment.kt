@@ -27,18 +27,20 @@ class FavoriteFilmsFragment : Fragment() {
     private val viewModel: FilmListViewModel by activityViewModels()
 
     private lateinit var recycler : RecyclerView
+    private var adapter: FilmRecyclerViewAdapter? = null
     var clickListener: OnFilmClickListener? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_main_films_list, container, false)
+        return inflater.inflate(R.layout.fragment_fav_films_list, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initToolbar()
-        initRecycler(view)
+        recycler = view.findViewById(R.id.list)
+        initRecycler(recycler)
 
         viewModel.favoriteFilms.observe(viewLifecycleOwner, Observer<List<Film>>{films ->
-            setAdapter(films)
+            adapter?.setData(films as ArrayList<Film>)
         })
     }
 
@@ -92,11 +94,13 @@ class FavoriteFilmsFragment : Fragment() {
     }
 
     private fun setAdapter(favoriteFilms: List<Film>) {
-        recycler.adapter = FilmRecyclerViewAdapter(
+        val filmAdapter  = FilmRecyclerViewAdapter(
             favoriteFilms as ArrayList,
             clickListener = itemClickListener,
             likeClickListener = likeClickListener
         )
+        adapter = filmAdapter
+        recycler.adapter = filmAdapter
     }
 
     // region clickListeners
@@ -117,7 +121,6 @@ class FavoriteFilmsFragment : Fragment() {
                 setAction(R.string.Undo) {
                     filmItem.isFavorite = !filmItem.isFavorite
                     viewModel.addToFavorite(filmItem)
-                    recycler.adapter?.notifyItemInserted(position)
                     recycler.adapter?.notifyItemRangeChanged(
                         position, viewModel.favoriteFilms.value?.size?:position - position
                     )

@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "496734296949",
+    "project_id": "mytestproject-d1ba4",
+    "storage_bucket": "mytestproject-d1ba4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:496734296949:android:943dad1e902f264378d13c",
+        "android_client_info": {
+          "package_name": "com.example.moviesearchapplication"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "496734296949-r7m9erh5jv1scnb3qkd6e10rjic0amds.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDOLGXYpobptRyw9cMO9lSHAEK-vUcDTEg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "496734296949-r7m9erh5jv1scnb3qkd6e10rjic0amds.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:496734296949:android:4a6670c7361c5fb778d13c",
+        "android_client_info": {
+          "package_name": "ru.gaket.themoviedb"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "496734296949-r7m9erh5jv1scnb3qkd6e10rjic0amds.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDOLGXYpobptRyw9cMO9lSHAEK-vUcDTEg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "496734296949-r7m9erh5jv1scnb3qkd6e10rjic0amds.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

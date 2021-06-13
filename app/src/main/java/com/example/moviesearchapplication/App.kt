@@ -19,7 +19,6 @@ class App: Application() {
     companion object {
         lateinit var instance: App
             private set
-        //const val BASE_URL = "https://my-json-server.typicode.com/anastasiyaK97/testapi/"
         const val BASE_URL = "https://kinopoiskapiunofficial.tech/"
     }
 

@@ -14,26 +14,23 @@ import com.bumptech.glide.Glide
 import com.example.moviesearchapplication.R
 import com.example.moviesearchapplication.data.model.entities.Film
 import com.example.moviesearchapplication.presentation.viewmodel.FilmDetailViewModel
+import com.example.moviesearchapplication.presentation.viewmodel.MainViewModelFactory
 import com.google.android.material.appbar.CollapsingToolbarLayout
-import java.util.concurrent.Executors
 
 class FilmDetailFragment : Fragment() {
 
     companion object {
         private const val FILM_ID_EXTRA = "FILM_ID_EXTRA"
+        @JvmStatic
         fun newInstance(filmId: Int): FilmDetailFragment {
             val args = Bundle()
             args.putInt(FILM_ID_EXTRA, filmId)
 
-            val newFragment =
-                FilmDetailFragment()
+            val newFragment = FilmDetailFragment()
             newFragment.arguments = args
             return newFragment
         }
     }
-
-    private var filmId: Int = 0
-    private val viewModel: FilmDetailViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,7 +41,9 @@ class FilmDetailFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        filmId = arguments?.getInt(FILM_ID_EXTRA) ?: 0
+        val filmId: Int = arguments?.getInt(FILM_ID_EXTRA) ?: 0
+        val viewModelFactory = MainViewModelFactory(filmId)
+        val viewModel: FilmDetailViewModel by viewModels{viewModelFactory}
 
         viewModel.film.observe(viewLifecycleOwner, Observer<Film>{ film ->
                     view.findViewById<TextView>(R.id.film_name).text = film?.title
@@ -52,9 +51,6 @@ class FilmDetailFragment : Fragment() {
 
                     initToolbar(film?.title?:"", film?.posterLink?:"")
             })
-        Executors.newSingleThreadScheduledExecutor().execute {
-            viewModel.fillFilmViewModel(filmId)
-        }
     }
 
     private fun initToolbar(title: String, posterLink: String) {

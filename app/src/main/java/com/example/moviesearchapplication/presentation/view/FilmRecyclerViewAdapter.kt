@@ -10,10 +10,8 @@ import com.bumptech.glide.Glide
 import com.example.moviesearchapplication.R
 import com.example.moviesearchapplication.data.model.entities.Film
 
-class FilmRecyclerViewAdapter(private val filmList: ArrayList<Film>,
-                              //private val clickListener: (item: Film, position: Int) -> Unit,
+class FilmRecyclerViewAdapter(private var filmList: ArrayList<Film>,
                               private val clickListener: OnItemClickListener,
-                              //private val likeClickListener : (item: Film, position: Int) -> Unit)
                               private val likeClickListener: OnLikeClickListener
 )
     : RecyclerView.Adapter<FilmRecyclerViewAdapter.FilmViewHolder>() {
@@ -50,6 +48,11 @@ class FilmRecyclerViewAdapter(private val filmList: ArrayList<Film>,
         super.onViewDetachedFromWindow(holder)
     }
 
+    fun setData(newList: ArrayList<Film>){
+        this.filmList = newList
+        this.notifyDataSetChanged()
+    }
+
     inner class FilmViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val nameTV: TextView = view.findViewById(R.id.name)
         private val genreTV: TextView = view.findViewById(R.id.genre)
@@ -59,8 +62,6 @@ class FilmRecyclerViewAdapter(private val filmList: ArrayList<Film>,
         fun bind(item : Film) {
             nameTV.text = item.title
             genreTV.text = item.originalTitle
-            //posterIV.setImageResource(item.imageID)
-            //posterIV.setImageResource(R.drawable.interstellar)
             Glide.with(posterIV.context)
                 .load(item.posterLink)
                 .placeholder(R.drawable.ic_image)

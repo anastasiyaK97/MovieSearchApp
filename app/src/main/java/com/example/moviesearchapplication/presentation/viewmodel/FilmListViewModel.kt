@@ -1,70 +1,108 @@
 package com.example.moviesearchapplication.presentation.viewmodel
 
-import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.example.moviesearchapplication.App
 import com.example.moviesearchapplication.data.FilmRepository
+import com.example.moviesearchapplication.data.model.entities.FavoriteFilm
 import com.example.moviesearchapplication.data.model.entities.Film
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class FilmListViewModel: ViewModel() {
-    val ITEMS_ON_PAGE_COUNT = 100
 
     private val repository: FilmRepository
 
     val allFilms :LiveData<List<Film>>
-    val favoriteFilms :LiveData<List<Film>>
-    val error : LiveData<String>
+    private val favorite : LiveData<List<FavoriteFilm>>
+    val favoriteFilms: LiveData<List<Film>>
+    val error = MutableLiveData<String>()
+    val loadingLiveData = MutableLiveData<Boolean>()
 
     private var totalPages: Int
     private var currentPage: Int
-    var isLoading = false
     var isLastPage = false
 
     init {
         val dao = App.instance.db.getFilmDao()
-        repository = FilmRepository(dao)
+        val favoriteDao = App.instance.db.getFavoriteFilmDao()
+        repository = FilmRepository(dao, favoriteDao)
         allFilms = repository.allFilms
-        favoriteFilms = repository.favoriteFilms
-        error = repository.error
+        favorite = repository.favoriteFilms
+        favoriteFilms = Transformations.map(favorite) {
+            it.map { favoriteFilm-> Film(favoriteFilm) }
+        }
+
         totalPages = 1
         currentPage = 1
-        getFilms()
+
+        loadingLiveData.value = true
+        loadFilms()
 
     }
 
-    fun update(film: Film) = viewModelScope.launch(Dispatchers.IO) {
+    private fun update(film: Film) = viewModelScope.launch(Dispatchers.IO) {
         repository.update(film)
     }
-    private fun getFilms() = viewModelScope.launch(Dispatchers.IO) {
+    private fun loadFilms() = viewModelScope.launch(Dispatchers.IO) {
         repository.getFilms(currentPage, object: FilmRepository.PageCountCallback {
             override fun onSuccess(count: Int) {
-                isLoading = false
                 totalPages = count
-                Log.d("LOG_TAG", "callback method in viewModel. totalPages = $totalPages")
+                error.postValue("")
+                loadingLiveData.postValue(false)
             }
 
+            override fun onFailure(e: String) {
+                currentPage -= 1
+                error.postValue(e)
+                loadingLiveData.postValue(false)
+            }
         })
     }
 
-    fun loadPageOnScroll() {
-        if (currentPage < totalPages && !isLoading) {
-            isLoading = true
+    fun loadNextPageOnScroll() {
+        if (currentPage == totalPages) {
+            isLastPage = true
+        } else
+            if (currentPage < totalPages) {
+            loadingLiveData.value = true
             currentPage += 1
-            Log.d("LOG_TAG1", "scroll listener. page = $currentPage")
-            getFilms()
+            loadFilms()
         }
     }
 
-    fun removeFromFavorite(filmItem: Film) {
-        update(filmItem)
+    fun tryLoadDataAgain() {
+        if (currentPage == totalPages)
+            currentPage = 0
+
+        if (currentPage < totalPages && !loadingLiveData.value!!) {
+            loadingLiveData.value = true
+            currentPage += 1
+            loadFilms()
+        }
     }
 
     fun addToFavorite(filmItem: Film) {
         update(filmItem)
+        val favoriteFilm = FavoriteFilm(filmItem)
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.insertFavorite(favoriteFilm)
+        }
+
+    }
+
+    fun removeFromFavorite(filmItem: Film) {
+        update(filmItem)
+        val favoriteFilm = FavoriteFilm(filmItem)
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.deleteFavorite(favoriteFilm)
+        }
+    }
+
+    fun updateLikeState(filmItem: Film) {
+        if (filmItem.isFavorite)
+            addToFavorite(filmItem)
+        else
+            removeFromFavorite(filmItem)
     }
 
 }

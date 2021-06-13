@@ -3,12 +3,10 @@ package com.example.moviesearchapplication.presentation.view
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -18,6 +16,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.moviesearchapplication.R
 import com.example.moviesearchapplication.data.model.entities.Film
 import com.example.moviesearchapplication.presentation.utilities.CustomDecorator
@@ -35,6 +34,18 @@ class MainFilmsFragment : Fragment() {
     private lateinit var adapter: FilmRecyclerViewAdapter
     val viewModel: FilmListViewModel by activityViewModels()
 
+    private lateinit var mySwipeRefreshLayout: SwipeRefreshLayout
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+        if (context is OnFilmClickListener) {
+            clickListener = context
+        } else {
+            Throwable("Activity must implement OnFilmClickListener")
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -45,13 +56,34 @@ class MainFilmsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initToolbar()
-        initRecyclerView(view)
+        recycler = view.findViewById(R.id.list)
+        initRecyclerView(recycler)
+
+        mySwipeRefreshLayout = view.findViewById(R.id.swiperefresh)
+        mySwipeRefreshLayout.post(Runnable {
+            mySwipeRefreshLayout.isRefreshing = true
+            viewModel.tryLoadDataAgain()
+        })
+        mySwipeRefreshLayout.setOnRefreshListener {
+            viewModel.tryLoadDataAgain()
+        }
+
+        viewModel.loadingLiveData.observe(viewLifecycleOwner, Observer<Boolean> { isLoading ->
+            if (isLoading == false)
+                mySwipeRefreshLayout.isRefreshing = false
+        })
 
         viewModel.allFilms.observe(viewLifecycleOwner, Observer<List<Film>>{ films ->
-            setAdapter(films)
+            adapter.setData(films as ArrayList<Film>)
         })
         viewModel.error.observe(viewLifecycleOwner, Observer { error->
-            Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+            if (error != "") {
+                Snackbar.make(recycler, error, Snackbar.LENGTH_SHORT).apply {
+                    setAction(R.string.retry) {
+                        viewModel.tryLoadDataAgain()
+                    }
+                }.show()
+            }
         })
     }
 
@@ -67,16 +99,6 @@ class MainFilmsFragment : Fragment() {
         }
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-
-        if (context is OnFilmClickListener) {
-            clickListener = context
-        } else {
-            Throwable("Activity must implement OnFilmClickListener")
-        }
-    }
-
     private fun initRecyclerView(view: View) {
         if (view is RecyclerView) {
             with(view) {
@@ -85,7 +107,6 @@ class MainFilmsFragment : Fragment() {
                 } else {
                     GridLayoutManager(context, 2)
                 }
-                recycler = this
                 layoutManager = mLayoutManager
 
                 setAdapter(viewModel.allFilms.value?: ArrayList())
@@ -110,12 +131,8 @@ class MainFilmsFragment : Fragment() {
                             mLayoutManager.findFirstVisibleItemPosition()
                         val needLoad = (visibleItemCount + firstVisibleItemPosition) >= totalItemCount
 
-                        Log.d("LOG_TAG1", "visibleItemCount = ${visibleItemCount}, firstVisibleItemPosition = ${firstVisibleItemPosition}, totalItemCount = ${totalItemCount}")
-
-                        if (!viewModel.isLoading && !viewModel.isLastPage && needLoad) {
-                            Log.d("LOG_TAG1", "call load method")
-                            viewModel.loadPageOnScroll()
-                            //recycler.adapter?.notifyDataSetChanged()
+                        if (!viewModel.loadingLiveData.value!! && !viewModel.isLastPage && needLoad) {
+                            viewModel.loadNextPageOnScroll()
                         }
                     }
                 })
@@ -124,18 +141,21 @@ class MainFilmsFragment : Fragment() {
     }
 
     private fun setAdapter(list: List<Film>){
-        recycler.adapter =
+        val filmAdapter  =
             FilmRecyclerViewAdapter(
                 list as ArrayList<Film>,
                 clickListener = itemClickListener,
                 likeClickListener = likeClickListener
             )
+        recycler.adapter = filmAdapter
+        adapter = filmAdapter
     }
+
     // region clickListeners
     private val likeClickListener  = object : FilmRecyclerViewAdapter.OnLikeClickListener {
         override fun onLikeClick(filmItem: Film, position: Int) {
             filmItem.isFavorite = !filmItem.isFavorite
-            viewModel.update(filmItem)
+            viewModel.updateLikeState(filmItem)
             recycler.adapter?.notifyItemChanged(position)
             val text =
                 if (filmItem.isFavorite) resources.getString(R.string.like_film_snackbar_text)
@@ -143,7 +163,7 @@ class MainFilmsFragment : Fragment() {
             Snackbar.make(recycler, text, Snackbar.LENGTH_SHORT).apply {
                 setAction(R.string.Undo) {
                     filmItem.isFavorite = !filmItem.isFavorite
-                    viewModel.update(filmItem)
+                    viewModel.updateLikeState(filmItem)
                     recycler.adapter?.notifyItemChanged(position)
                 }
             }.show()

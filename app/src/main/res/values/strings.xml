@@ -13,4 +13,10 @@
     <string name="unlike_film_snackbar_text">Фильм удален из избранного</string>
     <string name="Undo">Отмена</string>
 
+    <!-->Errors <!-->
+    <string name="connection_error">"Проблемы с сетевым подключением"</string>
+    <string name="server_error">"Возникла ошибка при запросе данных"</string>
+
+    <string name="retry">Повторить</string>
+
 </resources>

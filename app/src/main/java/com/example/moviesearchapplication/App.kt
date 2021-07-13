@@ -5,6 +5,10 @@ import com.example.moviesearchapplication.domain.FilmInteractor
 import com.example.moviesearchapplication.frameworks.apiServices.FilmApiService
 import com.example.moviesearchapplication.frameworks.database.Database
 import com.example.moviesearchapplication.frameworks.database.RoomDB
+import com.example.moviesearchapplication.presentation.utilities.MyNotifications
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.remoteconfig.ktx.remoteConfig
+import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -28,7 +32,9 @@ class App: Application() {
 
         initDatabase()
         initRetrofit()
+        configureFirebaseSettings()
         initInteractor()
+        initNotificationChannels()
 
     }
 
@@ -70,6 +76,21 @@ class App: Application() {
 
     private fun initInteractor() {
         filmInteractor = FilmInteractor(filmApiService)
+    }
+
+    private fun initNotificationChannels() {
+        MyNotifications.createWatchLaterChannel(instance)
+    }
+
+
+    private fun configureFirebaseSettings() {
+        val remoteConfig = Firebase.remoteConfig
+        val configSettings = remoteConfigSettings {
+            minimumFetchIntervalInSeconds = 1
+        }
+        remoteConfig.setConfigSettingsAsync(configSettings)
+        remoteConfig.setDefaultsAsync(FeatureToggles.defaults)
+        remoteConfig.fetchAndActivate()
     }
 
 }

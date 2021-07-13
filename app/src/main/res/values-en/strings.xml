@@ -9,15 +9,28 @@
     <string name="Cancel">Cancel</string>
     <string name="film_nav_title">Films</string>
     <string name="favorites_nav_title">Favorites</string>
+    <string name="save">Save</string>
 
     <string name="like_film_snackbar_text">Film was added to favorites</string>
     <string name="unlike_film_snackbar_text">Film was removed from favorites</string>
     <string name="Undo">Undo</string>
+
+    <string name="watch_later">Watch later</string>
 
     <!-->Errors <!-->
     <string name="connection_error">"Possible network connection problems"</string>
     <string name="server_error">"Error while requesting data"</string>
 
     <string name="retry">Try again</string>
+
+    <!-->Notifications<!-->
+    <string name="default_notification_channel_id">"channel"</string>
+    <string name="film_channel_name">"Channel 1"</string>
+    <string name="film_channel_description">"Notification about film"</string>
+    <string name="watch_later_title">"Reminder of watching movie"</string>
+    <string name="watch_later_text">"Don't forget to watch the movie"</string>
+    <string name="success_toast_text">Фильм добавлен в список \"Посмотреть позже\"</string>
+    <string name="fcm_message">Посмотрите информацию о популярном фильме</string>
+    <string name="fcm_title">Внимание</string>
 
 </resources>

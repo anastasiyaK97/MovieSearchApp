@@ -1,5 +1,6 @@
 package com.example.moviesearchapplication.presentation.view
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -16,11 +17,13 @@ import com.example.moviesearchapplication.data.model.entities.Film
 import com.example.moviesearchapplication.presentation.viewmodel.FilmDetailViewModel
 import com.example.moviesearchapplication.presentation.viewmodel.MainViewModelFactory
 import com.google.android.material.appbar.CollapsingToolbarLayout
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class FilmDetailFragment : Fragment() {
 
     companion object {
-        private const val FILM_ID_EXTRA = "FILM_ID_EXTRA"
+        const val FILM_ID_EXTRA = "FILM_ID_EXTRA"
+        private const val WATCH_LATER_REQUEST = 1
         @JvmStatic
         fun newInstance(filmId: Int): FilmDetailFragment {
             val args = Bundle()
@@ -51,6 +54,13 @@ class FilmDetailFragment : Fragment() {
 
                     initToolbar(film?.title?:"", film?.posterLink?:"")
             })
+
+        val fab = view.findViewById<FloatingActionButton>(R.id.fab)
+        fab.setOnClickListener {
+            val intent = Intent(requireContext(), SetUpWatchLaterFragment::class.java)
+            intent.putExtra(SetUpWatchLaterFragment.FILM_ID_EXTRA, filmId)
+            startActivityForResult(intent, WATCH_LATER_REQUEST)
+        }
     }
 
     private fun initToolbar(title: String, posterLink: String) {
@@ -70,6 +80,12 @@ class FilmDetailFragment : Fragment() {
         }
         requireActivity().findViewById<CollapsingToolbarLayout>(R.id.main_collapsing).title = title
 
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == WATCH_LATER_REQUEST) {
+
+        }
     }
 
 }

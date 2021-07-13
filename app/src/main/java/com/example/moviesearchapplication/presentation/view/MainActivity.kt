@@ -6,19 +6,27 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.example.moviesearchapplication.R
+import com.example.moviesearchapplication.presentation.viewmodel.FilmListViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import java.util.concurrent.Executors
 
 class MainActivity : AppCompatActivity(),
-    OnFilmClickListener {
+    OnFilmClickListener, OnWatchesClickListeners {
 
     companion object {
         const val TAG = "LOG_TAG"
     }
 
+    private lateinit var viewModel: FilmListViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        viewModel = ViewModelProvider(this).get(FilmListViewModel::class.java)
+
         initToolbar()
         loadFragment(MainFilmsFragment())
         initBottomNavigation()
@@ -92,5 +100,30 @@ class MainActivity : AppCompatActivity(),
             .commit()
     }
 
+    override fun onWatchIconClick(itemId : Int) {
+        supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.fragment_placeholder, SetUpWatchLaterFragment.newInstance(itemId))
+            .addToBackStack("")
+            .commit()
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        if (intent != null) {
+            val data = intent.getIntExtra(FilmDetailFragment.FILM_ID_EXTRA, -1)
+            if (data != -1) {
+                val fragment: Fragment = FilmDetailFragment.newInstance(data)
+                supportFragmentManager
+                    .beginTransaction()
+                    .replace(R.id.fragment_placeholder, fragment)
+                    .addToBackStack(null)
+                    .commit()
+                Executors.newSingleThreadScheduledExecutor().execute {
+                    viewModel.resetWatchLaterState(data)
+                }
+            }
+        }
+    }
 
 }

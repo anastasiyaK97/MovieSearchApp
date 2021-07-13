@@ -7,16 +7,16 @@ import com.example.moviesearchapplication.data.FilmRepository
 import com.example.moviesearchapplication.data.model.entities.Film
 import java.util.concurrent.Executors
 
-class FilmDetailViewModel(private val filmId: Int): ViewModel() {
+class SetUpWatchLaterViewModel(private val id: Int) : ViewModel() {
 
-    private val repository:FilmRepository = FilmRepository(App.instance.db.getFilmDao(), App.instance.db.getFavoriteFilmDao())
+    private val repository: FilmRepository = FilmRepository(App.instance.db.getFilmDao(), App.instance.db.getFavoriteFilmDao())
 
     var film = MutableLiveData<Film>()
-    private set
+        private set
 
     init {
         Executors.newSingleThreadScheduledExecutor().execute {
-            fillFilmViewModel(filmId)
+            fillFilmViewModel(id)
         }
     }
 
@@ -24,4 +24,10 @@ class FilmDetailViewModel(private val filmId: Int): ViewModel() {
         film.postValue(repository.getFilmById(id))
     }
 
+    fun updateNotificationSettings() {
+        if (film.value != null && !film.value?.isWatchingLater!!) {
+            film.value?.isWatchingLater = true
+            repository.update(film.value!!)
+        }
+    }
 }

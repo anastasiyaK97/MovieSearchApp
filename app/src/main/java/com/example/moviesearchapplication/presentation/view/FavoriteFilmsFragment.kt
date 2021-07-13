@@ -1,6 +1,7 @@
 package com.example.moviesearchapplication.presentation.view
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -97,7 +98,8 @@ class FavoriteFilmsFragment : Fragment() {
         val filmAdapter  = FilmRecyclerViewAdapter(
             favoriteFilms as ArrayList,
             clickListener = itemClickListener,
-            likeClickListener = likeClickListener
+            likeClickListener = likeClickListener,
+            watchLaterClickListener = iconWatchLaterClickListener
         )
         adapter = filmAdapter
         recycler.adapter = filmAdapter
@@ -132,6 +134,14 @@ class FavoriteFilmsFragment : Fragment() {
     private val itemClickListener = object : FilmRecyclerViewAdapter.OnItemClickListener{
         override fun onItemClick(filmItem: Film, position: Int) {
             clickListener?.onClick(filmItem.id)
+        }
+    }
+
+    private val iconWatchLaterClickListener = object : FilmRecyclerViewAdapter.OnWatchlaterClickListener{
+        override fun onIconClick(item: Film) {
+            startActivity(
+                Intent(requireContext(), SetUpWatchLaterFragment::class.java)
+            )
         }
     }
     // endregion

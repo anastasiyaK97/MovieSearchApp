@@ -24,17 +24,21 @@ import com.example.moviesearchapplication.presentation.viewmodel.FilmListViewMod
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.remoteconfig.ktx.remoteConfig
 
 const val TAG = "LOG_TAG"
 
 class MainFilmsFragment : Fragment() {
 
     var clickListener: OnFilmClickListener? = null
+    var watchLaterClickListener: OnWatchesClickListeners? = null
     private lateinit var recycler: RecyclerView
     private lateinit var adapter: FilmRecyclerViewAdapter
     val viewModel: FilmListViewModel by activityViewModels()
 
     private lateinit var mySwipeRefreshLayout: SwipeRefreshLayout
+    val remoteConfig = Firebase.remoteConfig
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -43,6 +47,11 @@ class MainFilmsFragment : Fragment() {
             clickListener = context
         } else {
             Throwable("Activity must implement OnFilmClickListener")
+        }
+        if (context is OnWatchesClickListeners) {
+            watchLaterClickListener = context
+        } else {
+            Throwable("Activity must implement OnWatchesClickListeners")
         }
     }
 
@@ -60,6 +69,7 @@ class MainFilmsFragment : Fragment() {
         initRecyclerView(recycler)
 
         mySwipeRefreshLayout = view.findViewById(R.id.swiperefresh)
+
         mySwipeRefreshLayout.post(Runnable {
             mySwipeRefreshLayout.isRefreshing = true
             viewModel.tryLoadDataAgain()
@@ -145,7 +155,8 @@ class MainFilmsFragment : Fragment() {
             FilmRecyclerViewAdapter(
                 list as ArrayList<Film>,
                 clickListener = itemClickListener,
-                likeClickListener = likeClickListener
+                likeClickListener = likeClickListener,
+                watchLaterClickListener = iconWatchLaterClickListener
             )
         recycler.adapter = filmAdapter
         adapter = filmAdapter
@@ -173,6 +184,11 @@ class MainFilmsFragment : Fragment() {
     private val itemClickListener = object : FilmRecyclerViewAdapter.OnItemClickListener{
         override fun onItemClick(filmItem: Film, position: Int) {
             clickListener?.onClick(filmItem.id)
+        }
+    }
+    private val iconWatchLaterClickListener = object : FilmRecyclerViewAdapter.OnWatchlaterClickListener{
+        override fun onIconClick(item: Film) {
+            watchLaterClickListener?.onWatchIconClick(item.id)
         }
     }
     // endregion

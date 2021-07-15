@@ -19,8 +19,10 @@ class FilmRepository(private val filmDAO: FilmDao, private val favoriteFilmDAO: 
 
     val allFilms: LiveData<List<Film>> = filmDAO.getAll()
     val favoriteFilms: LiveData<List<FavoriteFilm>> = favoriteFilmDAO.getAll()
-    var error = MutableLiveData<String>()
-    private set
+
+    private val _error = MutableLiveData<String>()
+    val error : LiveData<String> = _error
+
 
     private val filmInteractor = App.instance.filmInteractor
     private val filmMapper = FilmMapper()
@@ -61,7 +63,7 @@ class FilmRepository(private val filmDAO: FilmDao, private val favoriteFilmDAO: 
 
             override fun onError(error: String) {
                 callback.onFailure(error)
-                this@FilmRepository.error.value = error
+                this@FilmRepository._error.value = error
             }
 
         })

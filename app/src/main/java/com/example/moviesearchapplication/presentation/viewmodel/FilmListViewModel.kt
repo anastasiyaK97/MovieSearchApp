@@ -15,10 +15,12 @@ class FilmListViewModel: ViewModel() {
     val allFilms :LiveData<List<Film>>
     private val favorite : LiveData<List<FavoriteFilm>>
     val favoriteFilms: LiveData<List<Film>>
-    var error = MutableLiveData<String>()
-    private set
-    var loadingLiveData = MutableLiveData<Boolean>()
-    private set
+
+    private val _error = MutableLiveData<String>()
+    val error: LiveData<String> = _error
+
+    private val _loadingLiveData = MutableLiveData<Boolean>()
+    val loadingLiveData: LiveData<Boolean> = _loadingLiveData
 
 
     private var totalPages: Int
@@ -38,7 +40,7 @@ class FilmListViewModel: ViewModel() {
         totalPages = 1
         currentPage = 1
 
-        loadingLiveData.value = true
+        _loadingLiveData.value = true
         loadFilms()
 
     }
@@ -50,14 +52,14 @@ class FilmListViewModel: ViewModel() {
         repository.getFilms(currentPage, object: FilmRepository.PageCountCallback {
             override fun onSuccess(count: Int) {
                 totalPages = count
-                error.postValue("")
-                loadingLiveData.postValue(false)
+                _error.postValue("")
+                _loadingLiveData.postValue(false)
             }
 
             override fun onFailure(e: String) {
                 currentPage -= 1
-                error.postValue(e)
-                loadingLiveData.postValue(false)
+                _error.postValue(e)
+                _loadingLiveData.postValue(false)
             }
         })
     }
@@ -67,7 +69,7 @@ class FilmListViewModel: ViewModel() {
             isLastPage = true
         } else
             if (currentPage < totalPages) {
-            loadingLiveData.value = true
+            _loadingLiveData.value = true
             currentPage += 1
             loadFilms()
         }
@@ -77,8 +79,8 @@ class FilmListViewModel: ViewModel() {
         if (currentPage == totalPages)
             currentPage = 0
 
-        if (currentPage < totalPages && !loadingLiveData.value!!) {
-            loadingLiveData.value = true
+        if (currentPage < totalPages && !_loadingLiveData.value!!) {
+            _loadingLiveData.value = true
             currentPage += 1
             loadFilms()
         }

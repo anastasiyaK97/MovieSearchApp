@@ -15,8 +15,11 @@ class FilmListViewModel: ViewModel() {
     val allFilms :LiveData<List<Film>>
     private val favorite : LiveData<List<FavoriteFilm>>
     val favoriteFilms: LiveData<List<Film>>
-    val error = MutableLiveData<String>()
-    val loadingLiveData = MutableLiveData<Boolean>()
+    var error = MutableLiveData<String>()
+    private set
+    var loadingLiveData = MutableLiveData<Boolean>()
+    private set
+
 
     private var totalPages: Int
     private var currentPage: Int

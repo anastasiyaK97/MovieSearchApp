@@ -12,6 +12,8 @@ class FilmDetailViewModel(private val filmId: Int): ViewModel() {
     private val repository:FilmRepository = FilmRepository(App.instance.db.getFilmDao(), App.instance.db.getFavoriteFilmDao())
 
     var film = MutableLiveData<Film>()
+    private set
+
     init {
         Executors.newSingleThreadScheduledExecutor().execute {
             fillFilmViewModel(filmId)

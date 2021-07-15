@@ -19,7 +19,8 @@ class FilmRepository(private val filmDAO: FilmDao, private val favoriteFilmDAO: 
 
     val allFilms: LiveData<List<Film>> = filmDAO.getAll()
     val favoriteFilms: LiveData<List<FavoriteFilm>> = favoriteFilmDAO.getAll()
-    val error = MutableLiveData<String>()
+    var error = MutableLiveData<String>()
+    private set
 
     private val filmInteractor = App.instance.filmInteractor
     private val filmMapper = FilmMapper()

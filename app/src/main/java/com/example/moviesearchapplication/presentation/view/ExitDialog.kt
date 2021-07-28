@@ -1,4 +1,4 @@
-package com.example.moviesearchapplication.view
+package com.example.moviesearchapplication.presentation.view
 
 import android.app.AlertDialog
 import android.app.Dialog

@@ -13,4 +13,11 @@
     <string name="like_film_snackbar_text">Film was added to favorites</string>
     <string name="unlike_film_snackbar_text">Film was removed from favorites</string>
     <string name="Undo">Undo</string>
+
+    <!-->Errors <!-->
+    <string name="connection_error">"Possible network connection problems"</string>
+    <string name="server_error">"Error while requesting data"</string>
+
+    <string name="retry">Try again</string>
+
 </resources>

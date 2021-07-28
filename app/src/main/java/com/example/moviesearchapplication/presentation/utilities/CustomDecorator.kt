@@ -1,4 +1,4 @@
-package com.example.moviesearchapplication.view
+package com.example.moviesearchapplication.presentation.utilities
 
 import android.content.Context
 import android.graphics.Canvas

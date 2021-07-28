@@ -1,32 +1,86 @@
 package com.example.moviesearchapplication.data
 
-import com.example.moviesearchapplication.R
+import androidx.annotation.WorkerThread
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import com.example.moviesearchapplication.App
+import com.example.moviesearchapplication.data.DTO.DataMapper.FilmMapper
+import com.example.moviesearchapplication.data.DTO.NetworkFilm
+import com.example.moviesearchapplication.data.model.entities.FavoriteFilm
+import com.example.moviesearchapplication.data.model.entities.Film
+import com.example.moviesearchapplication.domain.FilmInteractor
+import com.example.moviesearchapplication.frameworks.database.FavoriteFilmDAO
+import com.example.moviesearchapplication.frameworks.database.FilmDao
+import java.util.concurrent.Executors
 
-class FilmRepository {
+const val TAG = "LOG_TAG"
 
-    companion object {
-        val filmCollection: ArrayList<Film> = arrayListOf(
-            Film(0, "Интерстеллар", "2014, фантастика, драма, приключения", R.drawable.interstellar, true),
-            Film(1, "Начало", "2010, фантастика, боевик, триллер", R.drawable.inception, true),
-            Film(2, "Прибытие", "2016, фантастика, триллер, драма", R.drawable.pribyitie2, true),
-            Film(3, "Интерстеллар2", "2014, фантастика, драма, приключения", R.drawable.interstellar, true),
-            Film(4, "Начало2", "2010, фантастика, боевик, триллер", R.drawable.inception),
-            Film(5, "Прибытие2", "2016, фантастика, триллер, драма", R.drawable.pribyitie2)
-        )
+class FilmRepository(private val filmDAO: FilmDao, private val favoriteFilmDAO: FavoriteFilmDAO) {
 
-        private val favoriteFilmCollection = ArrayList<Film>()
+    val allFilms: LiveData<List<Film>> = filmDAO.getAll()
+    val favoriteFilms: LiveData<List<FavoriteFilm>> = favoriteFilmDAO.getAll()
 
-        fun getFavoriteFilms() : ArrayList<Film> {
-            favoriteFilmCollection.clear()
-            for (item in filmCollection) {
-                if (item.isFavorite)
-                    favoriteFilmCollection.add(item)
-                else
-                    favoriteFilmCollection.remove(item)
+    private val _error = MutableLiveData<String>()
+    val error : LiveData<String> = _error
+
+
+    private val filmInteractor = App.instance.filmInteractor
+    private val filmMapper = FilmMapper()
+
+    private fun addToCache(collection: List<NetworkFilm>){
+
+        Executors.newSingleThreadScheduledExecutor().execute {
+        val idList = collection.map { it.id }
+        val filmsMap = favoriteFilmDAO.checkIfFilmsAreFavorites(idList).associateBy { it.id }
+
+        collection.forEach{
+            val new = filmMapper.map(it)
+            if (filmsMap.containsKey(new.id)) new.isFavorite = true
+            filmDAO.insert(new)
             }
-            return favoriteFilmCollection
         }
     }
+    private fun getCachedFilms() : LiveData<List<Film>> = filmDAO.getAll()
 
+    @WorkerThread
+    fun getFilmById(id: Int): Film = filmDAO.getFilmById(id)
+
+    @WorkerThread
+    fun getFilms(loadedPage: Int, callback: PageCountCallback): LiveData<List<Film>> {
+        return if (filmDAO.getAll().value == null || filmDAO.getAll().value?.count() == 0)
+        {
+            requestNetworkFilms(loadedPage, callback)
+            getCachedFilms()
+        } else getCachedFilms()
+    }
+
+    private fun requestNetworkFilms(page: Int, callback: PageCountCallback) {
+        filmInteractor.getFilms(page, object: FilmInteractor.GetFilmCallback{
+            override fun onSuccess(pagesCount: Int, networkFilms: List<NetworkFilm>) {
+                addToCache(networkFilms)
+                callback.onSuccess(pagesCount)
+            }
+
+            override fun onError(error: String) {
+                callback.onFailure(error)
+                this@FilmRepository._error.value = error
+            }
+
+        })
+    }
+
+    fun update(film: Film) = Executors.newSingleThreadScheduledExecutor().execute {
+        filmDAO.update(film)
+    }
+
+    fun insertFavorite(favoriteFilm: FavoriteFilm) = favoriteFilmDAO.insert(favoriteFilm)
+
+    fun deleteFavorite(favoriteFilm: FavoriteFilm) = favoriteFilmDAO.delete(favoriteFilm)
+
+
+    interface PageCountCallback {
+        fun onSuccess(count: Int)
+        fun onFailure(error: String)
+    }
 
 }

@@ -1,4 +1,4 @@
-package com.example.moviesearchapplication.view
+package com.example.moviesearchapplication.presentation.utilities
 
 import android.animation.Animator
 import android.animation.AnimatorInflater
@@ -12,7 +12,6 @@ import com.example.moviesearchapplication.R
 class FilmItemAnimator(private val context : Context) : DefaultItemAnimator() {
 
     override fun animateAdd(holder: RecyclerView.ViewHolder?): Boolean {
-        dispatchAddFinished(holder)
         return false
     }
 

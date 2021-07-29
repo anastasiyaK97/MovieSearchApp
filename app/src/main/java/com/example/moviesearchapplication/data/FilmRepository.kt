@@ -1,83 +1,73 @@
 package com.example.moviesearchapplication.data
 
-import androidx.annotation.WorkerThread
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.moviesearchapplication.App
 import com.example.moviesearchapplication.data.DTO.DataMapper.FilmMapper
 import com.example.moviesearchapplication.data.DTO.NetworkFilm
 import com.example.moviesearchapplication.data.model.entities.FavoriteFilm
 import com.example.moviesearchapplication.data.model.entities.Film
-import com.example.moviesearchapplication.domain.FilmInteractor
 import com.example.moviesearchapplication.frameworks.database.FavoriteFilmDAO
 import com.example.moviesearchapplication.frameworks.database.FilmDao
-import java.util.concurrent.Executors
+import io.reactivex.Completable
+import io.reactivex.Flowable
+import io.reactivex.Single
+import io.reactivex.schedulers.Schedulers
 
 const val TAG = "LOG_TAG"
 
 class FilmRepository(private val filmDAO: FilmDao, private val favoriteFilmDAO: FavoriteFilmDAO) {
 
-    val allFilms: LiveData<List<Film>> = filmDAO.getAll()
-    val favoriteFilms: LiveData<List<FavoriteFilm>> = favoriteFilmDAO.getAll()
-    val error = MutableLiveData<String>()
+    val allFilms: Flowable<List<Film>> = filmDAO.getAll()
+    val favoriteFilms: Flowable<List<FavoriteFilm>> = favoriteFilmDAO.getAll()
+    //val error = MutableLiveData<String>()
+    val pageCount = MutableLiveData<Int>()
 
     private val filmInteractor = App.instance.filmInteractor
     private val filmMapper = FilmMapper()
 
-    private fun addToCache(collection: List<NetworkFilm>){
+    fun getFilmById(id: Int): Single<Film> = filmDAO.getFilmById(id)
 
-        Executors.newSingleThreadScheduledExecutor().execute {
-        val idList = collection.map { it.id }
-        val filmsMap = favoriteFilmDAO.checkIfFilmsAreFavorites(idList).associateBy { it.id }
-
-        collection.forEach{
-            val new = filmMapper.map(it)
-            if (filmsMap.containsKey(new.id)) new.isFavorite = true
-            filmDAO.insert(new)
+    fun getFilmList(loadedPage: Int): Flowable<List<Film>> {
+        return requestNetworkFilms(loadedPage)
+            .subscribeOn(Schedulers.io())
+            .flatMap { apiFilmList ->
+                addToCache(apiFilmList)
+                    .andThen(getCachedFilms())
             }
+    }
+
+    private fun addToCache(collection: List<NetworkFilm>): Completable {
+        val filmCollection = collection.map {
+            filmMapper.map(it)
+        }
+        fillIsFavoriteFieldInList(filmCollection)
+        return filmDAO.insertList(filmCollection)
+    }
+
+    private fun fillIsFavoriteFieldInList(collection: List<Film>) {
+        val idList = collection.map { it.id }
+        val map = favoriteFilmDAO.checkIfFilmsAreFavorites(idList).associateBy { it.id }
+        collection.forEach {
+            if (map.containsKey(it.id))
+                it.isFavorite = true
         }
     }
-    private fun getCachedFilms() : LiveData<List<Film>> = filmDAO.getAll()
 
-    @WorkerThread
-    fun getFilmById(id: Int): Film = filmDAO.getFilmById(id)
+    private fun getCachedFilms(): Flowable<List<Film>> = filmDAO.getAll()
 
-    @WorkerThread
-    fun getFilms(loadedPage: Int, callback: PageCountCallback): LiveData<List<Film>> {
-        return if (filmDAO.getAll().value == null || filmDAO.getAll().value?.count() == 0)
-        {
-            requestNetworkFilms(loadedPage, callback)
-            getCachedFilms()
-        } else getCachedFilms()
-    }
-
-    private fun requestNetworkFilms(page: Int, callback: PageCountCallback) {
-        filmInteractor.getFilms(page, object: FilmInteractor.GetFilmCallback{
-            override fun onSuccess(pagesCount: Int, networkFilms: List<NetworkFilm>) {
-                addToCache(networkFilms)
-                callback.onSuccess(pagesCount)
+    private fun requestNetworkFilms(page: Int): Flowable<List<NetworkFilm>> =
+        filmInteractor.getFilms(page)
+            .flatMap { it ->
+                pageCount.postValue(it.pagesCount)
+                Flowable.just(it.films)
             }
 
-            override fun onError(error: String) {
-                callback.onFailure(error)
-                this@FilmRepository.error.value = error
-            }
+    fun update(film: Film): Completable = filmDAO.update(film)
 
-        })
-    }
+    fun insertFavorite(favoriteFilm: FavoriteFilm): Completable =
+        favoriteFilmDAO.insert(favoriteFilm)
 
-    fun update(film: Film) = Executors.newSingleThreadScheduledExecutor().execute {
-        filmDAO.update(film)
-    }
-
-    fun insertFavorite(favoriteFilm: FavoriteFilm) = favoriteFilmDAO.insert(favoriteFilm)
-
-    fun deleteFavorite(favoriteFilm: FavoriteFilm) = favoriteFilmDAO.delete(favoriteFilm)
-
-
-    interface PageCountCallback {
-        fun onSuccess(count: Int)
-        fun onFailure(error: String)
-    }
+    fun deleteFavorite(favoriteFilm: FavoriteFilm): Completable =
+        favoriteFilmDAO.delete(favoriteFilm)
 
 }

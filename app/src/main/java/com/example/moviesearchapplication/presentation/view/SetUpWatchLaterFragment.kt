@@ -87,10 +87,6 @@ class SetUpWatchLaterFragment :  Fragment() {
                 set(Calendar.YEAR, date.get(Calendar.YEAR));
                 set(Calendar.MONTH, date.get(Calendar.MONTH)); // January has value 0
                 set(Calendar.DAY_OF_MONTH, date.get(Calendar.DAY_OF_MONTH));
-                //set(Calendar.HOUR_OF_DAY, 21);
-                //set(Calendar.MINUTE, 14);
-                //set(Calendar.SECOND, 0);
-                //set(Calendar.AM_PM, Calendar.PM);
         }
 
        alarmManager?.set(

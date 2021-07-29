@@ -1,23 +1,27 @@
 package com.example.moviesearchapplication.presentation.view
 
+import android.app.AlarmManager
+import android.app.DatePickerDialog
+import android.app.DatePickerDialog.OnDateSetListener
+import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.moviesearchapplication.R
+import com.example.moviesearchapplication.presentation.utilities.AlarmReceiver
 import com.example.moviesearchapplication.presentation.viewmodel.FilmListViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import java.util.*
 import java.util.concurrent.Executors
 
 class MainActivity : AppCompatActivity(),
     OnFilmClickListener, OnWatchesClickListeners {
-
-    companion object {
-        const val TAG = "LOG_TAG"
-    }
 
     private lateinit var viewModel: FilmListViewModel
 
@@ -101,11 +105,56 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun onWatchIconClick(itemId : Int) {
-        supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.fragment_placeholder, SetUpWatchLaterFragment.newInstance(itemId))
-            .addToBackStack("")
-            .commit()
+        var date: Calendar = Calendar.getInstance()
+        val listener =
+            OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
+                date.set(Calendar.YEAR, year)
+                date.set(Calendar.MONTH, monthOfYear)
+                date.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+                createAlarm(date, itemId)
+            }
+        DatePickerDialog(
+            this, listener,
+            date.get(Calendar.YEAR),
+            date.get(Calendar.MONTH),
+            date.get(Calendar.DAY_OF_MONTH)
+        )
+            .show()
+    }
+
+    private fun createAlarm(date: Calendar, id: Int) {
+        Executors.newSingleThreadScheduledExecutor().execute {
+            val filmName = viewModel.getFilmTitleById(id)
+
+            val intent = Intent(this, AlarmReceiver::class.java).apply {
+                action = ALARM_ACTION
+                putExtra(FILM_NAME_EXTRA, filmName)
+                putExtra(FILM_ID_EXTRA, id)
+            }
+            val alarmIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+
+            val calendar = Calendar.getInstance().apply {
+                timeInMillis = System.currentTimeMillis()
+                set(Calendar.YEAR, date.get(Calendar.YEAR));
+                set(Calendar.MONTH, date.get(Calendar.MONTH)); // January has value 0
+                set(Calendar.DAY_OF_MONTH, date.get(Calendar.DAY_OF_MONTH));
+                //set(Calendar.HOUR_OF_DAY, 21);
+                //set(Calendar.MINUTE, 14);
+                //set(Calendar.SECOND, 0);
+                //set(Calendar.AM_PM, Calendar.PM);
+            }
+
+            val alarmManager = this.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
+            alarmManager?.set(
+                AlarmManager.RTC_WAKEUP,
+                calendar.timeInMillis,
+                alarmIntent
+            )
+
+            viewModel.updateFilmNotificationSettings(id)
+        }
+
+        Toast.makeText(this, R.string.success_toast_text, Toast.LENGTH_SHORT).show()
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -124,6 +173,14 @@ class MainActivity : AppCompatActivity(),
                 }
             }
         }
+    }
+
+    companion object {
+        const val FILM_ID_EXTRA = "FILM_ID_EXTRA"
+        const val FILM_NAME_EXTRA = "film name"
+
+        const val LOG_TAG = "LOG TAG"
+        const val ALARM_ACTION = "notification about film"
     }
 
 }

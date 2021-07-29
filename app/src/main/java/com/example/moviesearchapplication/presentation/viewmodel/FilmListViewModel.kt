@@ -110,4 +110,17 @@ class FilmListViewModel: ViewModel() {
         update(film)
     }
 
+    fun getFilmTitleById(id: Int): String {
+        val film = repository.getFilmById(id)
+        return film.title
+    }
+
+    fun updateFilmNotificationSettings(id: Int) {
+        val film = repository.getFilmById(id)
+        if (!film.isWatchingLater) {
+            film.isWatchingLater = true
+            repository.update(film)
+        }
+    }
+
 }

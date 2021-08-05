@@ -1,89 +1,51 @@
 package com.example.moviesearchapplication
 
 import android.app.Application
+import com.example.moviesearchapplication.di.AppComponent
+import com.example.moviesearchapplication.di.AppModule
+import com.example.moviesearchapplication.di.DaggerAppComponent
+import com.example.moviesearchapplication.di.RoomModule
 import com.example.moviesearchapplication.domain.FilmInteractor
 import com.example.moviesearchapplication.frameworks.apiServices.FilmApiService
-import com.example.moviesearchapplication.frameworks.database.Database
 import com.example.moviesearchapplication.frameworks.database.RoomDB
 import com.example.moviesearchapplication.presentation.utilities.MyNotifications
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Retrofit
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
-import retrofit2.converter.gson.GsonConverterFactory
-import java.util.concurrent.Executors
+import javax.inject.Inject
 
 class App: Application() {
-    lateinit var filmApiService: FilmApiService
-    lateinit var filmInteractor: FilmInteractor
+    lateinit var applicationComponent: AppComponent
+    @Inject
     lateinit var db : RoomDB
+    @Inject
+    lateinit var filmApiService: FilmApiService
+    @Inject
+    lateinit var filmInteractor: FilmInteractor
 
     companion object {
         lateinit var instance: App
             private set
-        const val BASE_URL = "https://kinopoiskapiunofficial.tech/"
     }
 
     override fun onCreate() {
         super.onCreate()
         instance = this
 
-        initDatabase()
-        initRetrofit()
+        applicationComponent = DaggerAppComponent.builder()
+            .appModule(AppModule(this))
+            .roomModule(RoomModule(this))
+            .build()
+        applicationComponent.inject(this)
+
         configureFirebaseSettings()
-        initInteractor()
         initNotificationChannels()
 
-    }
-
-    private fun initDatabase() {
-        Executors.newSingleThreadScheduledExecutor().execute{
-            db = Database.getInstance(this)
-        }
-    }
-
-    private fun initRetrofit() {
-        val logging = HttpLoggingInterceptor().apply {
-            level = if (BuildConfig.DEBUG)
-                HttpLoggingInterceptor.Level.BODY
-            else
-                HttpLoggingInterceptor.Level.BASIC
-        }
-
-        val okHttpClient = OkHttpClient.Builder()
-            .addInterceptor(logging)
-            .addInterceptor{chain ->
-                return@addInterceptor chain.proceed(
-                    chain
-                        .request()
-                        .newBuilder()
-                        .addHeader("X-API-KEY", "d4c64b7d-d347-4dff-9b1a-109d52f5c27a")
-                        .addHeader("accept", "application/json")
-                        .build()
-                )
-            }
-            .build()
-
-        filmApiService = Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-            .build()
-            .create(FilmApiService::class.java)
-    }
-
-    private fun initInteractor() {
-        filmInteractor = FilmInteractor(filmApiService)
     }
 
     private fun initNotificationChannels() {
         MyNotifications.createWatchLaterChannel(instance)
     }
-
 
     private fun configureFirebaseSettings() {
         val remoteConfig = Firebase.remoteConfig

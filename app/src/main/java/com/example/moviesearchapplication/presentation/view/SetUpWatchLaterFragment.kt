@@ -16,12 +16,13 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.example.moviesearchapplication.App
 import com.example.moviesearchapplication.R
 import com.example.moviesearchapplication.presentation.utilities.AlarmReceiver
 import com.example.moviesearchapplication.presentation.viewmodel.MainViewModelFactory
 import com.example.moviesearchapplication.presentation.viewmodel.SetUpWatchLaterViewModel
 import java.util.*
-
+import javax.inject.Inject
 
 class SetUpWatchLaterFragment :  Fragment() {
 
@@ -43,7 +44,9 @@ class SetUpWatchLaterFragment :  Fragment() {
         }
 
     }
-    lateinit var viewModel: SetUpWatchLaterViewModel
+    @Inject
+    lateinit var viewModelFactory: MainViewModelFactory
+    private val viewModel: SetUpWatchLaterViewModel by viewModels{viewModelFactory}
 
     var alarmManager: AlarmManager? = null
     private lateinit var dateTimeTextView: TextView
@@ -55,14 +58,13 @@ class SetUpWatchLaterFragment :  Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        App.instance.applicationComponent.inject(this)
         return inflater.inflate(R.layout.fragment_watch_later_settings, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         filmId = arguments?.getInt(FILM_ID_EXTRA) ?: 0
-        val viewModelFactory = MainViewModelFactory(filmId)
-        val vm: SetUpWatchLaterViewModel by viewModels{viewModelFactory}
-        viewModel = vm
+        viewModel.setFilm(filmId)
 
         dateTimeTextView = view.findViewById(R.id.textDate)
         alarmManager = requireActivity().getSystemService(Context.ALARM_SERVICE) as? AlarmManager

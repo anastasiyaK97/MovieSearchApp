@@ -13,27 +13,25 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import retrofit2.HttpException
 import java.net.UnknownHostException
+import javax.inject.Inject
 
-class FilmListViewModel: ViewModel() {
+class FilmListViewModel @Inject constructor(private val repository: FilmRepository): ViewModel() {
 
     private val compositeDisposable = CompositeDisposable()
 
-    private val repository: FilmRepository
+    //var repository: FilmRepository
 
     val allFilms = MutableLiveData<List<Film>>()
     val favoriteFilms = MutableLiveData<List<Film>>()
     val error = MutableLiveData<String>()
     val loadingLiveData = MutableLiveData<Boolean>()
 
-    private var totalPages: LiveData<Int>
+    private var totalPages: LiveData<Int> = repository.pageCount
     private var currentPage: Int
     var isLastPage = false
 
     init {
-        val dao = App.instance.db.getFilmDao()
-        val favoriteDao = App.instance.db.getFavoriteFilmDao()
-        repository = FilmRepository(dao, favoriteDao)
-        totalPages = repository.pageCount
+        //repository = App.instance.applicationComponent.repo()
         currentPage = 1
         loadingLiveData.value = true
 

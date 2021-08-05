@@ -6,8 +6,9 @@ import com.example.moviesearchapplication.frameworks.apiServices.FilmApiService
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.ktx.remoteConfig
 import io.reactivex.Flowable
+import javax.inject.Inject
 
-class FilmInteractor(private val apiService: FilmApiService) {
+class FilmInteractor @Inject constructor(private val apiService: FilmApiService) {
 
     val remoteConfig = Firebase.remoteConfig
 

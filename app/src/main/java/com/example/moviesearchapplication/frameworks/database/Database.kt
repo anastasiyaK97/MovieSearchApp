@@ -1,8 +1,6 @@
 package com.example.moviesearchapplication.frameworks.database
 
-import android.content.Context
-import androidx.room.Room
-
+/*
 object Database {
     private var INSTANCE: RoomDB? = null
 
@@ -25,4 +23,4 @@ object Database {
             return instance
         }
     }
-}
+}*/

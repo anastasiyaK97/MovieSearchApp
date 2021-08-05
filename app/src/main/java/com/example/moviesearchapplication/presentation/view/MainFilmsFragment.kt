@@ -17,25 +17,31 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.example.moviesearchapplication.App
 import com.example.moviesearchapplication.R
 import com.example.moviesearchapplication.data.model.entities.Film
 import com.example.moviesearchapplication.presentation.utilities.CustomDecorator
 import com.example.moviesearchapplication.presentation.viewmodel.FilmListViewModel
+import com.example.moviesearchapplication.presentation.viewmodel.MainViewModelFactory
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.ktx.remoteConfig
+import javax.inject.Inject
 
 const val TAG = "LOG_TAG"
 
 class MainFilmsFragment : Fragment() {
 
+    @Inject
+    lateinit var viewModelFactory: MainViewModelFactory
+    val viewModel: FilmListViewModel by activityViewModels{viewModelFactory}
+
     var clickListener: OnFilmClickListener? = null
     var watchLaterClickListener: OnWatchesClickListeners? = null
     private lateinit var recycler: RecyclerView
     private lateinit var adapter: FilmRecyclerViewAdapter
-    val viewModel: FilmListViewModel by activityViewModels()
 
     private lateinit var mySwipeRefreshLayout: SwipeRefreshLayout
     val remoteConfig = Firebase.remoteConfig
@@ -60,6 +66,7 @@ class MainFilmsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        App.instance.applicationComponent.inject(this)
         return inflater.inflate(R.layout.fragment_main_films_list, container, false)
     }
 

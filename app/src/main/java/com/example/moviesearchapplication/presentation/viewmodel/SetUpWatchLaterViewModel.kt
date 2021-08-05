@@ -3,21 +3,19 @@ package com.example.moviesearchapplication.presentation.viewmodel
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.moviesearchapplication.App
 import com.example.moviesearchapplication.data.FilmRepository
 import com.example.moviesearchapplication.data.model.entities.Film
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 
-class SetUpWatchLaterViewModel(private val id: Int) : ViewModel() {
+class SetUpWatchLaterViewModel(val repository: FilmRepository) : ViewModel() {
 
     private val compositeDisposable = CompositeDisposable()
-    private val repository: FilmRepository = FilmRepository(App.instance.db.getFilmDao(), App.instance.db.getFavoriteFilmDao())
 
     var film = MutableLiveData<Film>()
         private set
 
-    init {
+    fun setFilm(id: Int) {
         val d = repository.getFilmById(id)
             .subscribeOn(Schedulers.io())
             .observeOn(Schedulers.newThread())

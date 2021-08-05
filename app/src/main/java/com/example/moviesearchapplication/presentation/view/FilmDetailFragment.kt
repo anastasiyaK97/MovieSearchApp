@@ -12,12 +12,14 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.bumptech.glide.Glide
+import com.example.moviesearchapplication.App
 import com.example.moviesearchapplication.R
 import com.example.moviesearchapplication.data.model.entities.Film
 import com.example.moviesearchapplication.presentation.viewmodel.FilmDetailViewModel
 import com.example.moviesearchapplication.presentation.viewmodel.MainViewModelFactory
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import javax.inject.Inject
 
 class FilmDetailFragment : Fragment() {
 
@@ -34,19 +36,24 @@ class FilmDetailFragment : Fragment() {
             return newFragment
         }
     }
+    @Inject
+    lateinit var viewModelFactory: MainViewModelFactory
+    private val viewModel: FilmDetailViewModel by viewModels{viewModelFactory}
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        App.instance.applicationComponent.inject(this)
         return inflater.inflate(R.layout.film_detail_fragment, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
         val filmId: Int = arguments?.getInt(FILM_ID_EXTRA) ?: 0
-        val viewModelFactory = MainViewModelFactory(filmId)
-        val viewModel: FilmDetailViewModel by viewModels{viewModelFactory}
+
+        viewModel.setFilm(filmId)
 
         viewModel.film.observe(viewLifecycleOwner, Observer<Film>{ film ->
                     view.findViewById<TextView>(R.id.film_name).text = film?.title

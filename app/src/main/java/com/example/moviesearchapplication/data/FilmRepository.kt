@@ -6,23 +6,25 @@ import com.example.moviesearchapplication.data.DTO.DataMapper.FilmMapper
 import com.example.moviesearchapplication.data.DTO.NetworkFilm
 import com.example.moviesearchapplication.data.model.entities.FavoriteFilm
 import com.example.moviesearchapplication.data.model.entities.Film
+import com.example.moviesearchapplication.domain.FilmInteractor
 import com.example.moviesearchapplication.frameworks.database.FavoriteFilmDAO
 import com.example.moviesearchapplication.frameworks.database.FilmDao
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
+import javax.inject.Inject
 
 const val TAG = "LOG_TAG"
 
-class FilmRepository(private val filmDAO: FilmDao, private val favoriteFilmDAO: FavoriteFilmDAO) {
+class FilmRepository @Inject constructor(private val filmDAO: FilmDao, private val favoriteFilmDAO: FavoriteFilmDAO) {
+
+    val filmInteractor: FilmInteractor = App.instance.applicationComponent.filmInteractor()
 
     val allFilms: Flowable<List<Film>> = filmDAO.getAll()
     val favoriteFilms: Flowable<List<FavoriteFilm>> = favoriteFilmDAO.getAll()
     //val error = MutableLiveData<String>()
     val pageCount = MutableLiveData<Int>()
-
-    private val filmInteractor = App.instance.filmInteractor
     private val filmMapper = FilmMapper()
 
     fun getFilmById(id: Int): Single<Film> = filmDAO.getFilmById(id)

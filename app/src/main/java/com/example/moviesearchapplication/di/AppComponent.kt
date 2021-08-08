@@ -2,6 +2,7 @@ package com.example.moviesearchapplication.di
 
 import com.example.moviesearchapplication.App
 import com.example.moviesearchapplication.data.FilmRepository
+import com.example.moviesearchapplication.domain.FavoriteFilmInteractor
 import com.example.moviesearchapplication.domain.FilmInteractor
 import com.example.moviesearchapplication.presentation.view.*
 import dagger.Component
@@ -20,5 +21,6 @@ interface AppComponent {
 
     fun repo(): FilmRepository
     fun filmInteractor(): FilmInteractor
+    fun favoriteFilmInteractor(): FavoriteFilmInteractor
 
 }

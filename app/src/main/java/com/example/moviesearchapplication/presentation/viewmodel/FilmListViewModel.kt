@@ -19,8 +19,6 @@ class FilmListViewModel @Inject constructor(private val repository: FilmReposito
 
     private val compositeDisposable = CompositeDisposable()
 
-    //var repository: FilmRepository
-
     val allFilms = MutableLiveData<List<Film>>()
     val favoriteFilms = MutableLiveData<List<Film>>()
     val error = MutableLiveData<String>()
@@ -31,7 +29,6 @@ class FilmListViewModel @Inject constructor(private val repository: FilmReposito
     var isLastPage = false
 
     init {
-        //repository = App.instance.applicationComponent.repo()
         currentPage = 1
         loadingLiveData.value = true
 

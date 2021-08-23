@@ -5,7 +5,6 @@ import com.example.moviesearchapplication.di.AppComponent
 import com.example.moviesearchapplication.di.AppModule
 import com.example.moviesearchapplication.di.DaggerAppComponent
 import com.example.moviesearchapplication.di.RoomModule
-import com.example.moviesearchapplication.domain.FilmInteractor
 import com.example.moviesearchapplication.frameworks.apiServices.FilmApiService
 import com.example.moviesearchapplication.frameworks.database.RoomDB
 import com.example.moviesearchapplication.presentation.utilities.MyNotifications
@@ -16,12 +15,11 @@ import javax.inject.Inject
 
 class App: Application() {
     lateinit var applicationComponent: AppComponent
-    @Inject
-    lateinit var db : RoomDB
-    @Inject
-    lateinit var filmApiService: FilmApiService
-    @Inject
-    lateinit var filmInteractor: FilmInteractor
+    @Inject lateinit var db : RoomDB
+    @Inject lateinit var filmApiService: FilmApiService
+/*    @Inject lateinit var filmUseCases: FilmUseCases
+    @Inject lateinit var getFilmListUseCase: GetFilmListUseCase
+    @Inject lateinit var getFavoriteFilmListUseCase: GetFavoriteFilmListUseCase*/
 
     companion object {
         lateinit var instance: App

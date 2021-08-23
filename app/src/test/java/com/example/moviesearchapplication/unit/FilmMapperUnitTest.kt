@@ -1,4 +1,4 @@
-package com.example.moviesearchapplication
+package com.example.moviesearchapplication.unit
 
 import com.example.moviesearchapplication.data.DTO.DataMapper.FilmMapper
 import com.example.moviesearchapplication.data.DTO.NetworkFilm
@@ -19,11 +19,11 @@ class FilmMapperUnitTest : TestCase() {
 
     @Before
     override fun setUp() {
-        MockitoAnnotations.openMocks(this)
+        MockitoAnnotations.initMocks(this)
     }
 
     @Test
-    fun `test map from NetworkFilm to Film`() {
+    fun `test mapper from NetworkFilm to Film`() {
         val networkFilm = NetworkFilm(1, "Title1", "Original Title1", "2021", "posterUrl1", null)
         Mockito.`when`(mapper.map(networkFilm)).thenCallRealMethod()
         val actualFilm = mapper.map(networkFilm)

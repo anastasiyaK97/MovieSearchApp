@@ -2,15 +2,13 @@ package com.example.moviesearchapplication.di
 
 import com.example.moviesearchapplication.App
 import com.example.moviesearchapplication.data.FilmRepository
-import com.example.moviesearchapplication.domain.FavoriteFilmInteractor
-import com.example.moviesearchapplication.domain.FilmInteractor
 import com.example.moviesearchapplication.presentation.view.*
 import dagger.Component
 import javax.inject.Singleton
 
 @Singleton
 @Component(modules = [AppModule::class, RoomModule::class,
-    NetModule::class, InteractorModule::class, ViewModelModule::class], dependencies = [])
+    NetModule::class, UseCaseModule::class, InteractorModule::class, ViewModelModule::class], dependencies = [])
 interface AppComponent {
     fun inject(app: App)
     fun inject(activity: MainActivity)
@@ -20,7 +18,5 @@ interface AppComponent {
     fun inject(fragment: MainFilmsFragment)
 
     fun repo(): FilmRepository
-    fun filmInteractor(): FilmInteractor
-    fun favoriteFilmInteractor(): FavoriteFilmInteractor
 
 }

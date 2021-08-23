@@ -1,9 +1,10 @@
-package com.example.moviesearchapplication
+package com.example.moviesearchapplication.unit
 
 import com.example.moviesearchapplication.data.DTO.FilmsWithPageCount
 import com.example.moviesearchapplication.data.DTO.NetworkFilm
-import com.example.moviesearchapplication.domain.FilmInteractor
+import com.example.moviesearchapplication.data.MoviesRemoteDataSource
 import com.example.moviesearchapplication.frameworks.apiServices.FilmApiService
+import com.example.moviesearchapplication.rules.RxImmediateSchedulerRule
 import io.reactivex.Flowable
 import org.junit.Assert
 import org.junit.Before
@@ -21,11 +22,11 @@ class RequestFilmsUnitTest {
 
     @Mock
     lateinit var apiService: FilmApiService
-    lateinit var filmInteractor: FilmInteractor
+    lateinit var remoteDataSource: MoviesRemoteDataSource
 
     @Before
     fun setUp() {
-        filmInteractor = FilmInteractor(apiService)
+        remoteDataSource = MoviesRemoteDataSource(apiService)
     }
 
     @Test
@@ -36,15 +37,15 @@ class RequestFilmsUnitTest {
         ))
         Mockito.`when`(apiService.getTopFilms()).thenReturn(Flowable.just(moviesResponse))
 
-        val testSubscriber = filmInteractor.getFilms().test()
+        val testSubscriber = remoteDataSource.getFilms().test()
 
-        val testResult = testSubscriber.values()[0]
-        Assert.assertEquals(2, testResult.films.count())
-        Assert.assertEquals(1, testResult.films[0].id)
-        Assert.assertEquals("Title1", testResult.films[0].title)
-        Assert.assertEquals("Original Title1", testResult.films[0].originalTitle)
-        Assert.assertEquals("2021", testResult.films[0].year)
-        Assert.assertEquals("posterUrl1", testResult.films[0].posterLink)
+        val actualResult = testSubscriber.values()[0]
+        Assert.assertEquals(2, actualResult.films.count())
+        Assert.assertEquals(1, actualResult.films[0].id)
+        Assert.assertEquals("Title1", actualResult.films[0].title)
+        Assert.assertEquals("Original Title1", actualResult.films[0].originalTitle)
+        Assert.assertEquals("2021", actualResult.films[0].year)
+        Assert.assertEquals("posterUrl1", actualResult.films[0].posterLink)
 
         testSubscriber.dispose()
     }

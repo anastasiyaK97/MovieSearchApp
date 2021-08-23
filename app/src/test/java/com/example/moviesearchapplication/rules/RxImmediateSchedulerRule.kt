@@ -1,4 +1,4 @@
-package com.example.moviesearchapplication
+package com.example.moviesearchapplication.rules
 
 import io.reactivex.android.plugins.RxAndroidPlugins
 import io.reactivex.plugins.RxJavaPlugins

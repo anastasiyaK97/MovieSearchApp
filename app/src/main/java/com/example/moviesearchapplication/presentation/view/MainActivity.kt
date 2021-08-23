@@ -12,7 +12,6 @@ import com.example.moviesearchapplication.R
 import com.example.moviesearchapplication.presentation.viewmodel.FilmListViewModel
 import com.example.moviesearchapplication.presentation.viewmodel.MainViewModelFactory
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import java.util.concurrent.Executors
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(),
@@ -122,9 +121,7 @@ class MainActivity : AppCompatActivity(),
                     .replace(R.id.fragment_placeholder, fragment)
                     .addToBackStack(null)
                     .commit()
-                Executors.newSingleThreadScheduledExecutor().execute {
-                    viewModel.resetWatchLaterState(data)
-                }
+                viewModel.resetWatchLaterState(data)
             }
         }
     }

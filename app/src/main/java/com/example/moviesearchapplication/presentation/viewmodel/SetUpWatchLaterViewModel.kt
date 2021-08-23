@@ -3,12 +3,12 @@ package com.example.moviesearchapplication.presentation.viewmodel
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.moviesearchapplication.data.FilmRepository
 import com.example.moviesearchapplication.data.model.entities.Film
+import com.example.moviesearchapplication.domain.usecase.FilmUseCases
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 
-class SetUpWatchLaterViewModel(val repository: FilmRepository) : ViewModel() {
+class SetUpWatchLaterViewModel(private val filmUseCases: FilmUseCases) : ViewModel() {
 
     private val compositeDisposable = CompositeDisposable()
 
@@ -16,7 +16,7 @@ class SetUpWatchLaterViewModel(val repository: FilmRepository) : ViewModel() {
         private set
 
     fun setFilm(id: Int) {
-        val d = repository.getFilmById(id)
+        val d = filmUseCases.getFilmById(id)
             .subscribeOn(Schedulers.io())
             .observeOn(Schedulers.newThread())
             .subscribe(
@@ -24,13 +24,12 @@ class SetUpWatchLaterViewModel(val repository: FilmRepository) : ViewModel() {
                 {e -> Log.d("Error", e.message?:e.stackTraceToString())}
             )
         compositeDisposable.add(d)
-
     }
 
     fun updateNotificationSettings() {
         if (film.value != null && !film.value?.isWatchingLater!!) {
             film.value?.isWatchingLater = true
-            val d = repository.update(film.value!!)
+            val d = filmUseCases.updateFilm(film.value!!)
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.newThread())
                 .subscribe(

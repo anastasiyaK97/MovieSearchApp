@@ -1,9 +1,10 @@
 package com.example.moviesearchapplication.di
 
-import com.example.moviesearchapplication.domain.FavoriteFilmInteractor
-import com.example.moviesearchapplication.domain.FilmInteractor
+import com.example.moviesearchapplication.data.MoviesLocalDataSource
+import com.example.moviesearchapplication.data.MoviesRemoteDataSource
 import com.example.moviesearchapplication.frameworks.apiServices.FilmApiService
 import com.example.moviesearchapplication.frameworks.database.FavoriteFilmDAO
+import com.example.moviesearchapplication.frameworks.database.FilmDao
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -12,13 +13,13 @@ import javax.inject.Singleton
 class InteractorModule {
     @Singleton
     @Provides
-    fun providesInteractor(apiService: FilmApiService): FilmInteractor {
-        return FilmInteractor(apiService)
+    fun providesMoviesLocalDataSource(dao: FilmDao, favoriteDao: FavoriteFilmDAO): MoviesLocalDataSource {
+        return MoviesLocalDataSource(dao, favoriteDao)
     }
 
     @Singleton
     @Provides
-    fun providesFavoriteFilmInteractor(dao: FavoriteFilmDAO): FavoriteFilmInteractor {
-        return FavoriteFilmInteractor(dao)
+    fun providesMoviesRemoteDataSource(apiService: FilmApiService): MoviesRemoteDataSource {
+        return MoviesRemoteDataSource(apiService)
     }
 }

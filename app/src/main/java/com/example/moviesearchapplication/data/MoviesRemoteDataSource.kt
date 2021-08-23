@@ -1,13 +1,12 @@
-package com.example.moviesearchapplication.domain
+package com.example.moviesearchapplication.data
 
 import com.example.moviesearchapplication.data.DTO.FilmsWithPageCount
 import com.example.moviesearchapplication.frameworks.apiServices.FilmApiService
 import io.reactivex.Flowable
 import javax.inject.Inject
 
-class FilmInteractor @Inject constructor(private val apiService: FilmApiService) {
-
-//    private val remoteConfig = Firebase.remoteConfig
+class MoviesRemoteDataSource @Inject constructor(private val apiService: FilmApiService) {
+    //    private val remoteConfig = Firebase.remoteConfig
 
     fun getFilms(page: Int = 1): Flowable<FilmsWithPageCount> {
         val topCategory = "TOP_100_POPULAR_FILMS"//remoteConfig.getString(FeatureToggles.topCategory)

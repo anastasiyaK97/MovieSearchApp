@@ -1,11 +1,12 @@
 package com.example.moviesearchapplication
 
 import androidx.test.espresso.Espresso
+import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import androidx.test.rule.ActivityTestRule
 import com.example.moviesearchapplication.presentation.view.FilmRecyclerViewAdapter
@@ -15,6 +16,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+
 
 @RunWith(AndroidJUnit4ClassRunner::class)
 class FilmListUITest {
@@ -35,26 +37,25 @@ class FilmListUITest {
 
     @Test
     fun test_isListFragmentVisible_onAppLaunch() {
-        Espresso.onView(withId(R.id.list)).check(matches(isDisplayed()))
+        onView(withId(R.id.list)).check(matches(isDisplayed()))
     }
 
     @Test
     fun test_selectListItem_isDetailFilmFragmentVisible() {
-        Espresso.onView(withId(R.id.list))
+        onView(withId(R.id.list))
             .perform(
                 actionOnItemAtPosition<FilmRecyclerViewAdapter.FilmViewHolder>(
                     LIST_ITEM_TO_CLICK,
                     click()
                 )
             )
-        Espresso.onView(withId(R.id.film_name)).check(matches(isDisplayed()))
-        Espresso.onView(withId(R.id.descr)).check(matches(isDisplayed()))
+        onView(withId(R.id.film_name)).check(matches(isDisplayed()))
+        onView(withId(R.id.descr)).check(matches(isDisplayed()))
     }
 
     @Test
-    @Throws(androidx.test.espresso.PerformException::class)
     fun test_backNavigation_toTheFilmListFragment() {
-        Espresso.onView(withId(R.id.list))
+        onView(withId(R.id.list))
             .perform(
                 actionOnItemAtPosition<FilmRecyclerViewAdapter.FilmViewHolder>(
                     LIST_ITEM_TO_CLICK,
@@ -62,19 +63,38 @@ class FilmListUITest {
                 )
             )
         Espresso.pressBack()
-        Espresso.onView(withId(R.id.list)).check(matches(isDisplayed()))
+        onView(withId(R.id.list)).check(matches(isDisplayed()))
     }
 
     @Test
     fun test_clickMovieItemLikeIcon_isMovieAddedInFavoriteList() {
-        Espresso.onView(withId(R.id.list))
-            .perform(
-                actionOnItemAtPosition<FilmRecyclerViewAdapter.FilmViewHolder>(
-                    LIST_ITEM_TO_CLICK,
-                    LikeViewAction.clickLikeIconViewWithId(R.id.like)
+        val testFilmTitle = "Интерстеллар"
+        /*
+            Find a movie in the list and add to favorite
+         */
+        onView(withId(R.id.list)).perform(
+            RecyclerViewActions.actionOnHolderItem(
+                RecyclerViewMatchers.withFilmTitle(testFilmTitle),
+                LikeViewAction.clickLikeIconViewWithId(R.id.like)
             )
         )
-        Thread.sleep(1000)
+        /*
+            Check if the movie is on the favorites list
+        */
+        onView(withId(R.id.nav_favorite)).perform(click())
+        onView(withId(R.id.list)).check(matches(hasDescendant(withText(testFilmTitle))))
+
+        /*
+            Remove movie from favorites
+        */
+        onView(withId(R.id.nav_main)).perform(click())
+        onView(withId(R.id.list)).perform(
+            RecyclerViewActions.actionOnHolderItem(
+                RecyclerViewMatchers.withFilmTitle(testFilmTitle),
+                LikeViewAction.clickLikeIconViewWithId(R.id.like)
+            )
+        )
+
     }
 
 

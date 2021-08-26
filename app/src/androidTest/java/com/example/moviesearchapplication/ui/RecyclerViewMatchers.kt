@@ -1,10 +1,11 @@
-package com.example.moviesearchapplication
+package com.example.moviesearchapplication.ui
 
 import android.view.View
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.matcher.BoundedMatcher
 import androidx.test.internal.util.Checks
+import com.example.moviesearchapplication.R
 import com.example.moviesearchapplication.presentation.view.FilmRecyclerViewAdapter
 import org.hamcrest.Description
 import org.hamcrest.Matcher

@@ -1,4 +1,4 @@
-package com.example.moviesearchapplication
+package com.example.moviesearchapplication.ui
 
 import android.view.View
 import androidx.test.espresso.UiController

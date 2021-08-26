@@ -1,4 +1,4 @@
-package com.example.moviesearchapplication
+package com.example.moviesearchapplication.ui
 
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
@@ -9,6 +9,7 @@ import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import androidx.test.rule.ActivityTestRule
+import com.example.moviesearchapplication.R
 import com.example.moviesearchapplication.presentation.view.FilmRecyclerViewAdapter
 import com.example.moviesearchapplication.presentation.view.MainActivity
 import org.junit.After
@@ -74,8 +75,12 @@ class FilmListUITest {
          */
         onView(withId(R.id.list)).perform(
             RecyclerViewActions.actionOnHolderItem(
-                RecyclerViewMatchers.withFilmTitle(testFilmTitle),
-                LikeViewAction.clickLikeIconViewWithId(R.id.like)
+                RecyclerViewMatchers.withFilmTitle(
+                    testFilmTitle
+                ),
+                LikeViewAction.clickLikeIconViewWithId(
+                    R.id.like
+                )
             )
         )
         /*
@@ -90,8 +95,12 @@ class FilmListUITest {
         onView(withId(R.id.nav_main)).perform(click())
         onView(withId(R.id.list)).perform(
             RecyclerViewActions.actionOnHolderItem(
-                RecyclerViewMatchers.withFilmTitle(testFilmTitle),
-                LikeViewAction.clickLikeIconViewWithId(R.id.like)
+                RecyclerViewMatchers.withFilmTitle(
+                    testFilmTitle
+                ),
+                LikeViewAction.clickLikeIconViewWithId(
+                    R.id.like
+                )
             )
         )
 

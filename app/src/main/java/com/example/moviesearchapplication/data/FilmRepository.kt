@@ -15,10 +15,6 @@ import javax.inject.Inject
 const val TAG = "LOG_TAG"
 
 class FilmRepository @Inject constructor(
-/*    private val filmDAO: FilmDao,
-    private val favoriteFilmDAO: FavoriteFilmDAO,
-    private val filmInteractor: FilmInteractor,
-    private val favoriteFilmInteractor: FavoriteFilmInteractor*/
 private val localSource: MoviesLocalDataSource,
 private val remoteSource: MoviesRemoteDataSource,
 

@@ -8,6 +8,7 @@ import com.example.moviesearchapplication.di.RoomModule
 import com.example.moviesearchapplication.frameworks.apiServices.FilmApiService
 import com.example.moviesearchapplication.frameworks.database.RoomDB
 import com.example.moviesearchapplication.presentation.utilities.MyNotifications
+import com.google.firebase.FirebaseApp
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
@@ -17,9 +18,6 @@ class App: Application() {
     lateinit var applicationComponent: AppComponent
     @Inject lateinit var db : RoomDB
     @Inject lateinit var filmApiService: FilmApiService
-/*    @Inject lateinit var filmUseCases: FilmUseCases
-    @Inject lateinit var getFilmListUseCase: GetFilmListUseCase
-    @Inject lateinit var getFavoriteFilmListUseCase: GetFavoriteFilmListUseCase*/
 
     companion object {
         lateinit var instance: App
@@ -36,6 +34,7 @@ class App: Application() {
             .build()
         applicationComponent.inject(this)
 
+        FirebaseApp.initializeApp(this)
         configureFirebaseSettings()
         initNotificationChannels()
 

@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity(),
     lateinit var viewModelFactory: MainViewModelFactory
     private lateinit var viewModel: FilmListViewModel
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         App.instance.applicationComponent.inject(this)
@@ -56,7 +56,7 @@ class MainActivity : AppCompatActivity(),
     private fun loadFragment(fragment: Fragment) {
         supportFragmentManager
             .beginTransaction()
-            .replace(R.id.fragment_placeholder, fragment)
+            .replace(R.id.fragment_placeholder, fragment, "fragment")
             .commit()
     }
 
@@ -89,9 +89,14 @@ class MainActivity : AppCompatActivity(),
         if (supportFragmentManager.backStackEntryCount >  0) {
             supportFragmentManager.popBackStack()
         } else {
-            ExitDialog (exitAction = {super.onBackPressed()})
-                .show(supportFragmentManager, "dialog")
+            openExitDialog()
         }
+    }
+
+    fun openExitDialog(){
+        supportFragmentManager.beginTransaction()
+        val dialog = ExitDialog()
+        dialog.show(supportFragmentManager, "dialog")
     }
 
     override fun onClick(itemId : Int) {
@@ -118,7 +123,7 @@ class MainActivity : AppCompatActivity(),
                 val fragment: Fragment = FilmDetailFragment.newInstance(data)
                 supportFragmentManager
                     .beginTransaction()
-                    .replace(R.id.fragment_placeholder, fragment)
+                    .replace(R.id.fragment_placeholder, fragment, "detail fragment")
                     .addToBackStack(null)
                     .commit()
                 viewModel.resetWatchLaterState(data)

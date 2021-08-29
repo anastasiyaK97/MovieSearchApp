@@ -89,10 +89,4 @@ class FilmDetailFragment : Fragment() {
 
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == WATCH_LATER_REQUEST) {
-
-        }
-    }
-
 }

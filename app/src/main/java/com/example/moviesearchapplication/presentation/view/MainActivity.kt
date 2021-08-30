@@ -4,11 +4,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProviders
 import com.example.moviesearchapplication.App
+import com.example.moviesearchapplication.BuildConfig
 import com.example.moviesearchapplication.R
 import com.example.moviesearchapplication.presentation.viewmodel.FilmListViewModel
 import com.example.moviesearchapplication.presentation.viewmodel.MainViewModelFactory
@@ -41,17 +43,21 @@ class MainActivity : AppCompatActivity(),
 
     private fun initBottomNavigation(){
         val navigate = findViewById<BottomNavigationView>(R.id.bottom_navigation)
-        navigate.setOnNavigationItemSelectedListener{
-            when (it.itemId) {
-                R.id.nav_main -> {
-                    loadFragment(MainFilmsFragment())
+        if (BuildConfig.PAID) {
+            navigate.setOnNavigationItemSelectedListener{
+                when (it.itemId) {
+                    R.id.nav_main -> {
+                        loadFragment(MainFilmsFragment())
+                    }
+                    R.id.nav_favorite -> {
+                        loadFragment(FavoriteFilmsFragment())
+                    }
                 }
-                R.id.nav_favorite -> {
-                    loadFragment(FavoriteFilmsFragment())
-                }
+                true
             }
-            true
         }
+        else
+            navigate.visibility = View.GONE
     }
 
     private fun loadFragment(fragment: Fragment) {

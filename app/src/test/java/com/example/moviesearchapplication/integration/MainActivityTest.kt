@@ -1,9 +1,7 @@
 package com.example.moviesearchapplication.integration
 
 import android.content.Intent
-import android.os.Looper
 import androidx.test.core.app.ApplicationProvider
-import com.example.moviesearchapplication.presentation.view.ExitDialog
 import com.example.moviesearchapplication.presentation.view.FilmDetailFragment
 import com.example.moviesearchapplication.presentation.view.MainActivity
 import org.junit.Assert
@@ -12,8 +10,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric.buildActivity
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.Shadows
-
 
 @RunWith(RobolectricTestRunner::class)
 class MainActivityTest {
@@ -34,15 +30,6 @@ class MainActivityTest {
     }
 
     @Test
-    fun whenBackPressed_exitDialogIsShownToTheUser() {
-        Shadows.shadowOf(Looper.getMainLooper()).pause()
-        activity.openExitDialog()
-        val dialog: ExitDialog? = activity
-            .supportFragmentManager.findFragmentByTag("dialog") as? ExitDialog
-        Assert.assertNotNull(dialog)
-    }
-
-    @Test
     fun whenActivityCreatedWithIntent_detailFragmentIsShownToTheUser() {
         val filmId = 838
         val intent = Intent(ApplicationProvider.getApplicationContext(), MainActivity::class.java).apply {
@@ -53,12 +40,11 @@ class MainActivityTest {
                     Intent.FLAG_ACTIVITY_SINGLE_TOP
         }
         val newActivity =
-            buildActivity(MainActivity::class.java, intent).create().start().resume().get()
+            buildActivity(MainActivity::class.java, intent).create().newIntent(intent).start().resume().get()
         val fragment = newActivity
             .supportFragmentManager
             .findFragmentByTag("detail fragment")
         Assert.assertNotNull(fragment)
     }
-
 
 }

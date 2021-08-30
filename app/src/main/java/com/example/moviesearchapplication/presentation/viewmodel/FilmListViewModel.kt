@@ -138,7 +138,7 @@ class FilmListViewModel @Inject constructor(
         filmUseCases.resetWatchLaterFilmState(id)
             .subscribeOn(Schedulers.io())
             .observeOn(Schedulers.newThread())
-            .subscribe()
+            .subscribe({}, {})
     }
 
 }

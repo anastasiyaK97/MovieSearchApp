@@ -6,6 +6,7 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProviders
 import com.example.moviesearchapplication.App
 import com.example.moviesearchapplication.R
@@ -89,14 +90,14 @@ class MainActivity : AppCompatActivity(),
         if (supportFragmentManager.backStackEntryCount >  0) {
             supportFragmentManager.popBackStack()
         } else {
-            openExitDialog()
+            openExitDialog(supportFragmentManager)
         }
     }
 
-    fun openExitDialog(){
-        supportFragmentManager.beginTransaction()
+    fun openExitDialog(manager: FragmentManager){
+        manager.beginTransaction()
         val dialog = ExitDialog()
-        dialog.show(supportFragmentManager, "dialog")
+        dialog.show(manager, "dialog")
     }
 
     override fun onClick(itemId : Int) {

@@ -44,27 +44,30 @@ android {
             signingConfig signingConfigs.release
             shrinkResources true
             debuggable false
+            resValue("bool", "FIREBASE_ANALYTICS_DEACTIVATED", "false")
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
             minifyEnabled false
             debuggable true
             versionNameSuffix ".dev"
+            resValue("bool", "FIREBASE_ANALYTICS_DEACTIVATED", "true")
+            ext.enableCrashlytics = false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 
-    /*flavorDimensions "version"
+    flavorDimensions "version"
     productFlavors {
         free {
             dimension "version"
-            //applicationId = "com.example.moviesearchapplication"
+            applicationId = "com.example.moviesearchapplication"
         }
         paid {
             dimension "version"
             applicationId = "com.example.moviesearchapplication"
         }
-    }*/
+    }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8

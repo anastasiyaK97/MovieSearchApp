@@ -14,6 +14,7 @@ import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import javax.inject.Inject
 
+
 class App: Application() {
     lateinit var applicationComponent: AppComponent
     @Inject lateinit var db : RoomDB

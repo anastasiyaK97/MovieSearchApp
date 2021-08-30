@@ -7,6 +7,12 @@ plugins {
     id 'com.google.firebase.crashlytics'
 }
 
+def keystorePropertiesFile = rootProject.file("keystore.properties")
+def keystoreProperties = new Properties()
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
 android {
     compileSdkVersion 28
     testOptions.unitTests.includeAndroidResources = true
@@ -20,14 +26,46 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        proguardFiles getDefaultProguardFile('proguard-android.txt')
+    }
+
+    signingConfigs {
+        release {
+            storeFile file('D:\\Projects\\keyStore\\keyMovieSearch.jks')
+            storePassword keystoreProperties['storePassword']
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+        }
     }
 
     buildTypes {
         release {
+            minifyEnabled true
+            signingConfig signingConfigs.release
+            shrinkResources true
+            debuggable false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
             minifyEnabled false
+            debuggable true
+            versionNameSuffix ".dev"
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    /*flavorDimensions "version"
+    productFlavors {
+        free {
+            dimension "version"
+            //applicationId = "com.example.moviesearchapplication"
+        }
+        paid {
+            dimension "version"
+            applicationId = "com.example.moviesearchapplication"
+        }
+    }*/
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -108,28 +146,20 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:+'
     androidTestImplementation 'com.android.support.test.espresso:espresso-contrib:3.0.2'
 
-    /*androidTestCompile ("com.nhaarman:mockito-kotlin:1.4.0", {
-        exclude group: 'org.jetbrains.kotlin'
-        exclude group: 'org.mockito'
-    })*/
-    /*androidTestCompile 'org.mockito:mockito-android:3.11.2'
-    androidTestImplementation 'com.linkedin.dexmaker:dexmaker-mockito-inline:2.28.1'*/
-    //androidTestCompile 'com.github.tmurakami:dexopener:0.10.1'
-    //androidTestImplementation "org.mockito:mockito-core:$mockito_version"
-    //androidTestImplementation "org.mockito:mockito-inline:$mockito_version"
-
-    /*androidTestImplementation 'net.bytebuddy:byte-buddy:1.10.20'
-    androidTestImplementation 'net.bytebuddy:byte-buddy-agent:1.11.3'
-    androidTestImplementation 'org.objenesis:objenesis:3.2'*/
-
-
 }
 
 android {
+    signingConfigs {
+        release {
+            storeFile file('D:\\Projects\\keyStore\\keyMovieSearch.jks')
+            storePassword 'Dywdywc1'
+            keyAlias 'key0'
+            keyPassword 'Dywdywc1'
+        }
+    }
     testOptions {
         unitTests.all {
             testLogging {
-                // позволяет вставлять в тесты логи  System.out.println("Start Test");
                 showStandardStreams = true
             }
         }

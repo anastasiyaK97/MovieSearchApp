@@ -15,23 +15,29 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.moviesearchapplication.App
 import com.example.moviesearchapplication.R
 import com.example.moviesearchapplication.data.model.entities.Film
 import com.example.moviesearchapplication.presentation.utilities.CustomDecorator
 import com.example.moviesearchapplication.presentation.viewmodel.FilmListViewModel
+import com.example.moviesearchapplication.presentation.viewmodel.MainViewModelFactory
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.snackbar.Snackbar
+import javax.inject.Inject
 
 class FavoriteFilmsFragment : Fragment() {
 
-    private val viewModel: FilmListViewModel by activityViewModels()
+    @Inject
+    lateinit var viewModelFactory: MainViewModelFactory
+    private val viewModel: FilmListViewModel by activityViewModels{viewModelFactory}
 
     private lateinit var recycler : RecyclerView
     private var adapter: FilmRecyclerViewAdapter? = null
     var clickListener: OnFilmClickListener? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        App.instance.applicationComponent.inject(this)
         return inflater.inflate(R.layout.fragment_fav_films_list, container, false)
     }
 

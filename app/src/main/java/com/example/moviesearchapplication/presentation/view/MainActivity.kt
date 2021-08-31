@@ -12,25 +12,33 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
+import com.example.moviesearchapplication.App
 import com.example.moviesearchapplication.R
 import com.example.moviesearchapplication.presentation.utilities.AlarmReceiver
 import com.example.moviesearchapplication.presentation.viewmodel.FilmListViewModel
+import com.example.moviesearchapplication.presentation.viewmodel.MainViewModelFactory
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.util.*
 import java.util.concurrent.Executors
+import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(),
     OnFilmClickListener, OnWatchesClickListeners {
+      
+    companion object {
+        const val TAG = "LOG_TAG"
+    }
+    @Inject
+    lateinit var viewModelFactory: MainViewModelFactory
 
     private lateinit var viewModel: FilmListViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        viewModel = ViewModelProvider(this).get(FilmListViewModel::class.java)
-
+        App.instance.applicationComponent.inject(this)
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(FilmListViewModel::class.java)
         initToolbar()
         loadFragment(MainFilmsFragment())
         initBottomNavigation()

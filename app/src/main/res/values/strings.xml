@@ -18,7 +18,9 @@
 
     <!-->Errors <!-->
     <string name="connection_error">"Проблемы с сетевым подключением"</string>
-    <string name="server_error">"Возникла ошибка при запросе данных"</string>
+    <string name="server_error">"Ошибка сервера"</string>
+    <string name="request_error">Возникла ошибка при запросе данных</string>
+    <string name="unknown_error">Неизвестная ошибка</string>
 
     <string name="retry">Повторить</string>
 
@@ -31,6 +33,7 @@
     <string name="success_toast_text">Фильм добавлен в список \"Посмотреть позже\"</string>
     <string name="fcm_message">Посмотрите информацию о популярном фильме</string>
     <string name="fcm_title">Внимание</string>
+    <string name="db_error">Ошибка при работе с базой данных</string>
 
 
 </resources>

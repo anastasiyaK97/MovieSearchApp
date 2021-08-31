@@ -15,11 +15,9 @@ const val LOG_TAG = "myReceiver"
 class AlarmReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
-        /*Log.d(LOG_TAG, "onReceive")
-        Log.d(LOG_TAG, "action = " + intent.action)
-        Log.d(LOG_TAG, "extra = " + intent.getStringExtra(SetUpWatchLaterFragment.FILM_NAME_EXTRA))
-*/
-        if (intent.action == MainActivity.ALARM_ACTION) {
+
+        if (intent.action == SetUpWatchLaterFragment.ALARM_ACTION) {
+          
             val notificationManager = NotificationManagerCompat.from(context)
             val filmId = intent.getIntExtra(MainActivity.FILM_ID_EXTRA, -1)
 

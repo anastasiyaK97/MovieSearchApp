@@ -29,9 +29,9 @@ import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(),
     OnFilmClickListener, OnWatchesClickListeners {
-
     @Inject
     lateinit var viewModelFactory: MainViewModelFactory
+
     private lateinit var viewModel: FilmListViewModel
 
     private val compositeDisposable = CompositeDisposable()

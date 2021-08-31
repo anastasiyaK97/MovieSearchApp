@@ -15,6 +15,7 @@ class AlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
 
         if (intent.action == MainActivity.ALARM_ACTION) {
+
             val notificationManager = NotificationManagerCompat.from(context)
             val filmId = intent.getIntExtra(MainActivity.FILM_ID_EXTRA, -1)
 

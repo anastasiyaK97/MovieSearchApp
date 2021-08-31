@@ -1,6 +1,7 @@
 package com.example.moviesearchapplication.presentation.viewmodel
 
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.moviesearchapplication.data.model.entities.Film
@@ -13,15 +14,15 @@ class FilmDetailViewModel @Inject constructor(private val filmUseCases: FilmUseC
 
     private val compositeDisposable = CompositeDisposable()
 
-    var film = MutableLiveData<Film>()
-        private set
+    private val _film = MutableLiveData<Film>()
+    val film: LiveData<Film> = _film
 
     fun setFilm(filmId: Int) {
         val d = filmUseCases.getFilmById(filmId)
             .subscribeOn(Schedulers.io())
             .observeOn(Schedulers.newThread())
             .subscribe(
-                {film.postValue(it)},
+                {_film.postValue(it)},
                 {e -> Log.d("Error", e.message?:e.stackTraceToString())}
             )
         compositeDisposable.add(d)

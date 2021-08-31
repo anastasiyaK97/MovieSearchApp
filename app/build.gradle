@@ -7,11 +7,6 @@ plugins {
     id 'com.google.firebase.crashlytics'
 }
 
-def keystorePropertiesFile = rootProject.file("keystore.properties")
-def keystoreProperties = new Properties()
-if (keystorePropertiesFile.exists()) {
-    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
-}
 
 android {
     compileSdkVersion 28
@@ -28,10 +23,15 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         proguardFiles getDefaultProguardFile('proguard-android.txt')
     }
+    def keystorePropertiesFile = rootProject.file("keystore.properties")
+    def keystoreProperties = new Properties()
+    if (keystorePropertiesFile.exists()) {
+        keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+    }
 
     signingConfigs {
         release {
-            storeFile file('D:\\Projects\\keyStore\\keyMovieSearch.jks')
+            storeFile file(keystoreProperties['storeFile'])
             storePassword keystoreProperties['storePassword']
             keyAlias keystoreProperties['keyAlias']
             keyPassword keystoreProperties['keyPassword']
@@ -41,11 +41,11 @@ android {
     buildTypes {
         release {
             minifyEnabled true
-            signingConfig signingConfigs.release
             shrinkResources true
             debuggable false
             resValue("bool", "FIREBASE_ANALYTICS_DEACTIVATED", "false")
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
         debug {
             minifyEnabled false
@@ -154,14 +154,7 @@ dependencies {
 }
 
 android {
-    signingConfigs {
-        release {
-            storeFile file('D:\\Projects\\keyStore\\keyMovieSearch.jks')
-            storePassword 'Dywdywc1'
-            keyAlias 'key0'
-            keyPassword 'Dywdywc1'
-        }
-    }
+
     testOptions {
         unitTests.all {
             testLogging {

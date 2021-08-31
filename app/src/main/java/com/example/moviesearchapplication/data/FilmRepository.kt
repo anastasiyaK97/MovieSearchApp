@@ -65,7 +65,6 @@ class FilmRepository @Inject constructor(
             .flatMap { it ->
                 pageCount.postValue(it.pagesCount)
                 Flowable.just(it.films)
-            }
 
     private fun addToCache(collection: List<Film>): Completable {
         return filmDAO.insertList(collection)

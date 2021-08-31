@@ -88,7 +88,7 @@ class FilmListViewModel @Inject constructor(private val repository: FilmReposito
         if (currentPage == totalPages.value?:1) {
             isLastPage = true
         } else
-            if (currentPage < totalPages.value?:1) {
+        if (currentPage < totalPages.value?:1) {
             loadingLiveData.value = true
             currentPage += 1
             loadFilms()
@@ -139,6 +139,19 @@ class FilmListViewModel @Inject constructor(private val repository: FilmReposito
                 film.isWatchingLater = false
                 update(film) }
             .subscribe()
+    }
+
+    fun getFilmTitleById(id: Int): String {
+        val film = repository.getFilmById(id)
+        return film.title
+    }
+
+    fun updateFilmNotificationSettings(id: Int) {
+        val film = repository.getFilmById(id)
+        if (!film.isWatchingLater) {
+            film.isWatchingLater = true
+            repository.update(film)
+        }
     }
 
 }

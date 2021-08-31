@@ -10,14 +10,12 @@ import com.example.moviesearchapplication.R
 import com.example.moviesearchapplication.presentation.view.FilmDetailFragment
 import com.example.moviesearchapplication.presentation.view.MainActivity
 
-const val LOG_TAG = "myReceiver"
-
 class AlarmReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
 
-        if (intent.action == SetUpWatchLaterFragment.ALARM_ACTION) {
-          
+        if (intent.action == MainActivity.ALARM_ACTION) {
+
             val notificationManager = NotificationManagerCompat.from(context)
             val filmId = intent.getIntExtra(MainActivity.FILM_ID_EXTRA, -1)
 

@@ -17,5 +17,4 @@ import com.example.moviesearchapplication.data.model.entities.Genre
 abstract class RoomDB : RoomDatabase() {
     abstract fun getFilmDao(): FilmDao
     abstract fun getFavoriteFilmDao(): FavoriteFilmDAO
-    //abstract fun getGenreDao(): GenreDao
 }

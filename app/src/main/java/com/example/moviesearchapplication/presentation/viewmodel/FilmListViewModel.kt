@@ -5,17 +5,23 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.moviesearchapplication.App
 import com.example.moviesearchapplication.R
-import com.example.moviesearchapplication.data.FilmRepository
-import com.example.moviesearchapplication.data.model.entities.FavoriteFilm
 import com.example.moviesearchapplication.data.model.entities.Film
+import com.example.moviesearchapplication.domain.usecase.FilmUseCases
+import com.example.moviesearchapplication.domain.usecase.GetFavoriteFilmListUseCase
+import com.example.moviesearchapplication.domain.usecase.GetFilmListUseCase
 import io.reactivex.Completable
+import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import retrofit2.HttpException
 import java.net.UnknownHostException
 import javax.inject.Inject
 
-class FilmListViewModel @Inject constructor(private val repository: FilmRepository): ViewModel() {
+class FilmListViewModel @Inject constructor(
+    private val filmUseCases: FilmUseCases,
+    private val filmListUseCase: GetFilmListUseCase,
+    private val favoriteFilmListUseCase: GetFavoriteFilmListUseCase
+): ViewModel() {
 
     private val compositeDisposable = CompositeDisposable()
 
@@ -24,7 +30,7 @@ class FilmListViewModel @Inject constructor(private val repository: FilmReposito
     val error = MutableLiveData<String>()
     val loadingLiveData = MutableLiveData<Boolean>()
 
-    private var totalPages: LiveData<Int> = repository.pageCount
+    private var totalPages: LiveData<Int> = filmListUseCase.pageCount
     private var currentPage: Int
     var isLastPage = false
 
@@ -32,7 +38,7 @@ class FilmListViewModel @Inject constructor(private val repository: FilmReposito
         currentPage = 1
         loadingLiveData.value = true
 
-        val disposableAllFilms = repository.allFilms
+        val disposableAllFilms = filmListUseCase.getAllFilms()
             .subscribeOn(Schedulers.io())
             .observeOn(Schedulers.newThread())
             .subscribe(
@@ -41,7 +47,7 @@ class FilmListViewModel @Inject constructor(private val repository: FilmReposito
                     allFilms.postValue(films)},
                 {e -> error.postValue(App.instance.resources.getString(R.string.db_error))}
             )
-        val disposableFavoriteFilm = repository.favoriteFilms
+        val disposableFavoriteFilm = favoriteFilmListUseCase.getAllFavoriteFilms()
             .subscribeOn(Schedulers.io())
             .observeOn(Schedulers.newThread())
             .subscribe(
@@ -55,10 +61,10 @@ class FilmListViewModel @Inject constructor(private val repository: FilmReposito
         loadFilms()
     }
 
-    private fun update(film: Film): Completable = repository.update(film)
+    private fun update(film: Film): Completable = filmUseCases.updateFilm(film)
 
     private fun loadFilms() {
-        val d = repository.getFilmList(currentPage)
+        val d = filmListUseCase.requestFilmListInPage(currentPage)
             .subscribeOn(Schedulers.io())
             .observeOn(Schedulers.newThread())
             .subscribe(
@@ -109,16 +115,14 @@ class FilmListViewModel @Inject constructor(private val repository: FilmReposito
     }
 
     fun addToFavorite(filmItem: Film) {
-        update(filmItem)
-            .andThen(repository.insertFavorite(FavoriteFilm(filmItem)))
+        filmUseCases.addFilmToFavorite(filmItem)
             .subscribeOn(Schedulers.io())
             .observeOn(Schedulers.newThread())
             .subscribe()
     }
 
     fun removeFromFavorite(filmItem: Film) {
-        update(filmItem)
-            .andThen( repository.deleteFavorite(FavoriteFilm(filmItem)))
+        filmUseCases.removeFilmFromFavorite(filmItem)
             .subscribeOn(Schedulers.io())
             .observeOn(Schedulers.newThread())
             .subscribe()
@@ -132,13 +136,27 @@ class FilmListViewModel @Inject constructor(private val repository: FilmReposito
     }
 
     fun resetWatchLaterState(id: Int) {
-        repository.getFilmById(id)
+        val disposable = filmUseCases.resetWatchLaterFilmState(id)
             .subscribeOn(Schedulers.io())
             .observeOn(Schedulers.newThread())
+            .subscribe({}, {})
+        compositeDisposable.add(disposable)
+    }
+    fun getFilmById(id: Int): Single<Film> {
+       return filmUseCases.getFilmById(id)
+    }
+
+    fun updateFilmNotificationSettings(id: Int) {
+        val disposable = filmUseCases.getFilmById(id)
             .flatMapCompletable { film ->
-                film.isWatchingLater = false
-                update(film) }
-            .subscribe()
+                if (!film.isWatchingLater)
+                film.isWatchingLater = true
+                update(film)
+            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(Schedulers.newThread())
+            .subscribe({}, {})
+        compositeDisposable.add(disposable)
     }
 
     fun getFilmTitleById(id: Int): String {

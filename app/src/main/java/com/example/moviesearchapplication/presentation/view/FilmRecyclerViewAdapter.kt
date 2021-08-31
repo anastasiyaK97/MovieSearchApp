@@ -7,6 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.moviesearchapplication.BuildConfig
 import com.example.moviesearchapplication.R
 import com.example.moviesearchapplication.data.model.entities.Film
 
@@ -33,6 +34,9 @@ class FilmRecyclerViewAdapter(private var filmList: ArrayList<Film>,
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FilmViewHolder {
         val view = LayoutInflater.from(parent.context)
                 .inflate(R.layout.film_item, parent, false)
+        if (!BuildConfig.PAID) {
+            view.findViewById<ImageView>(R.id.like).visibility = View.INVISIBLE
+        }
         return FilmViewHolder(view)
     }
 
@@ -43,7 +47,6 @@ class FilmRecyclerViewAdapter(private var filmList: ArrayList<Film>,
             clickListener.onItemClick(film, position)
         }
         holder.setLikeClickListener(film, position)
-        //holder.setWhatchLaterClickListener(film, position)
     }
 
     override fun getItemCount(): Int = filmList.size
@@ -95,9 +98,6 @@ class FilmRecyclerViewAdapter(private var filmList: ArrayList<Film>,
         fun setLikeClickListener(item: Film, position: Int){
             likeIV.setOnClickListener{likeClickListener.onLikeClick(item, position)}
         }
-        /*fun setWhatchLaterClickListener(item: Film, position: Int){
-            watchLaterIV.setOnClickListener{watchLaterClickListener.onIconClick(item, position)}
-        }*/
     }
 
 }

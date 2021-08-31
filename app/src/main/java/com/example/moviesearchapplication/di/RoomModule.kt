@@ -3,6 +3,8 @@ package com.example.moviesearchapplication.di
 import androidx.room.Room
 import com.example.moviesearchapplication.App
 import com.example.moviesearchapplication.data.FilmRepository
+import com.example.moviesearchapplication.data.MoviesLocalDataSource
+import com.example.moviesearchapplication.data.MoviesRemoteDataSource
 import com.example.moviesearchapplication.frameworks.database.FavoriteFilmDAO
 import com.example.moviesearchapplication.frameworks.database.FilmDao
 import com.example.moviesearchapplication.frameworks.database.RoomDB
@@ -15,7 +17,6 @@ class RoomModule(mApplication: App) {
 
     private val databaseInstance = Room
         .databaseBuilder(mApplication, RoomDB::class.java, "film_database.db")
-        // .addCallback()
         .fallbackToDestructiveMigration()
         .build()
 
@@ -38,7 +39,10 @@ class RoomModule(mApplication: App) {
     }
     @Singleton
     @Provides
-    fun providesRepository(filmDao: FilmDao, favoriteFilmDAO: FavoriteFilmDAO): FilmRepository {
-        return FilmRepository(filmDao, favoriteFilmDAO)
+    fun providesRepository(
+        localSource: MoviesLocalDataSource,
+        remoteSource: MoviesRemoteDataSource
+        ): FilmRepository {
+        return FilmRepository(localSource, remoteSource)
     }
 }

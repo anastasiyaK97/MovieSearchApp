@@ -6,11 +6,11 @@ import android.os.Bundle
 import androidx.fragment.app.DialogFragment
 import com.example.moviesearchapplication.R
 
-class ExitDialog (internal val exitAction: () -> Unit) : DialogFragment() {
+class ExitDialog() : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return AlertDialog.Builder(requireContext())
             .setMessage(R.string.exit_dialog_msg)
-            .setPositiveButton(R.string.Yes){ _, _ ->  exitAction()}
+            .setPositiveButton(R.string.Yes){ _, _ ->  (requireContext() as MainActivity).finish()}
             .setNegativeButton(R.string.Cancel){dialog, _ ->  dialog.cancel()}
             .create()
     }

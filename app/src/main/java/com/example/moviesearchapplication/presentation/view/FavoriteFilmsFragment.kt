@@ -1,7 +1,6 @@
 package com.example.moviesearchapplication.presentation.view
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -35,6 +34,7 @@ class FavoriteFilmsFragment : Fragment() {
     private lateinit var recycler : RecyclerView
     private var adapter: FilmRecyclerViewAdapter? = null
     var clickListener: OnFilmClickListener? = null
+    var watchLaterClickListener: OnWatchesClickListeners? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         App.instance.applicationComponent.inject(this)
@@ -57,6 +57,11 @@ class FavoriteFilmsFragment : Fragment() {
             clickListener = context
         } else {
             Throwable("Activity must implement OnFilmClickListener")
+        }
+        if (context is OnWatchesClickListeners) {
+            watchLaterClickListener = context
+        } else {
+            Throwable("Activity must implement OnWatchesClickListeners")
         }
     }
 
@@ -88,14 +93,6 @@ class FavoriteFilmsFragment : Fragment() {
                     filmDecoration.setDrawable(it)
                 }
                 addItemDecoration(filmDecoration)
-
-                //С аниматором почему-то не работает: после
-                //this@with.adapter?.notifyItemInserted(position)
-                //добавляется пустой holder (без данных).
-                // Не понимаю почему......
-
-                /*val animator = FilmItemAnimator(requireContext())
-                itemAnimator = animator*/
             }
         }
     }
@@ -143,11 +140,9 @@ class FavoriteFilmsFragment : Fragment() {
         }
     }
 
-    private val iconWatchLaterClickListener = object : FilmRecyclerViewAdapter.OnWatchlaterClickListener{
+    private val iconWatchLaterClickListener = object : FilmRecyclerViewAdapter.OnWatchlaterClickListener {
         override fun onIconClick(item: Film) {
-            startActivity(
-                Intent(requireContext(), SetUpWatchLaterFragment::class.java)
-            )
+            watchLaterClickListener?.onWatchIconClick(item.id)
         }
     }
     // endregion

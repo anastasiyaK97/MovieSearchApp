@@ -1,5 +1,6 @@
 package com.example.moviesearchapplication.presentation.viewmodel
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.moviesearchapplication.App
@@ -11,8 +12,8 @@ class FilmDetailViewModel(private val filmId: Int): ViewModel() {
 
     private val repository:FilmRepository = FilmRepository(App.instance.db.getFilmDao(), App.instance.db.getFavoriteFilmDao())
 
-    var film = MutableLiveData<Film>()
-    private set
+    private val _film = MutableLiveData<Film>()
+    val film: LiveData<Film> = _film
 
     init {
         Executors.newSingleThreadScheduledExecutor().execute {
@@ -21,7 +22,7 @@ class FilmDetailViewModel(private val filmId: Int): ViewModel() {
     }
 
     private fun fillFilmViewModel(id: Int) {
-        film.postValue(repository.getFilmById(id))
+        _film.postValue(repository.getFilmById(id))
     }
 
 }

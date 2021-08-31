@@ -8,15 +8,29 @@
     <string name="Cancel">Отмена</string>
     <string name="film_nav_title">Фильмы</string>
     <string name="favorites_nav_title">Избранные</string>
+    <string name="save">Сохранить</string>
 
     <string name="like_film_snackbar_text">Фильм добавлен в избранное</string>
     <string name="unlike_film_snackbar_text">Фильм удален из избранного</string>
     <string name="Undo">Отмена</string>
+    <string name="watch_later">Смотреть позже</string>
+
 
     <!-->Errors <!-->
     <string name="connection_error">"Проблемы с сетевым подключением"</string>
     <string name="server_error">"Возникла ошибка при запросе данных"</string>
 
     <string name="retry">Повторить</string>
+
+    <!-->Notifications<!-->
+    <string name="default_notification_channel_id">"channel"</string>
+    <string name="film_channel_name">"Channel 1"</string>
+    <string name="film_channel_description">"Notification about film"</string>
+    <string name="watch_later_title">"Напоминание о фильме"</string>
+    <string name="watch_later_text">"Не забудьте посмотреть фильм"</string>
+    <string name="success_toast_text">Фильм добавлен в список \"Посмотреть позже\"</string>
+    <string name="fcm_message">Посмотрите информацию о популярном фильме</string>
+    <string name="fcm_title">Внимание</string>
+
 
 </resources>

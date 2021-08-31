@@ -12,4 +12,7 @@
     <color name="text_background_selected">#2f5e8a</color>
     <color name="text_selected">#e5eeff</color>
     <color name="divider_color">#515151</color>
+
+    <color name="fab_color">#FFFFFFFF</color>
+    <color name="fab_icon_color">#0058FF</color>
 </resources>

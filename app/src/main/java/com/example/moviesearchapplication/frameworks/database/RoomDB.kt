@@ -12,7 +12,7 @@ import com.example.moviesearchapplication.data.model.entities.Genre
         Film::class,
         Genre::class,
         FavoriteFilm::class
-    ), version = 3)
+    ), version = 4)
 @TypeConverters(GenreConverter::class)
 abstract class RoomDB : RoomDatabase() {
     abstract fun getFilmDao(): FilmDao

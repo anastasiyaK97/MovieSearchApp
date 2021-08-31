@@ -42,7 +42,6 @@ class FilmListViewModel: ViewModel() {
 
         _loadingLiveData.value = true
         loadFilms()
-
     }
 
     private fun update(film: Film) = viewModelScope.launch(Dispatchers.IO) {
@@ -108,6 +107,25 @@ class FilmListViewModel: ViewModel() {
             addToFavorite(filmItem)
         else
             removeFromFavorite(filmItem)
+    }
+
+    fun resetWatchLaterState(id: Int) {
+        val film = repository.getFilmById(id)
+        film.isWatchingLater = false
+        update(film)
+    }
+
+    fun getFilmTitleById(id: Int): String {
+        val film = repository.getFilmById(id)
+        return film.title
+    }
+
+    fun updateFilmNotificationSettings(id: Int) {
+        val film = repository.getFilmById(id)
+        if (!film.isWatchingLater) {
+            film.isWatchingLater = true
+            repository.update(film)
+        }
     }
 
 }

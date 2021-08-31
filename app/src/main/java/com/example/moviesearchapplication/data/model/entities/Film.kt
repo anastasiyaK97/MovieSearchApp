@@ -1,4 +1,4 @@
-package com.example.moviesearchapplication.data.model.entities;
+package com.example.moviesearchapplication.data.model.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -14,7 +14,8 @@ data class Film(
         val posterLink: String,
         @ColumnInfo(name = "genresArray")
         var genres : List<Genre>?,
-        var isFavorite: Boolean = false
+        var isFavorite: Boolean = false,
+        var isWatchingLater: Boolean = false
 )
 {
         constructor(film: FavoriteFilm) : this(film.id, film.title, film.originalTitle, film.year, film.posterLink, film.genres, true)

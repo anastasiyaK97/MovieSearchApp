@@ -12,7 +12,8 @@ import com.example.moviesearchapplication.data.model.entities.Film
 
 class FilmRecyclerViewAdapter(private var filmList: ArrayList<Film>,
                               private val clickListener: OnItemClickListener,
-                              private val likeClickListener: OnLikeClickListener
+                              private val likeClickListener: OnLikeClickListener,
+                              private val watchLaterClickListener: OnWatchlaterClickListener
 )
     : RecyclerView.Adapter<FilmRecyclerViewAdapter.FilmViewHolder>() {
 
@@ -23,6 +24,9 @@ class FilmRecyclerViewAdapter(private var filmList: ArrayList<Film>,
 
     interface OnLikeClickListener {
         fun onLikeClick(item: Film, position: Int)
+    }
+    interface OnWatchlaterClickListener {
+        fun onIconClick(item: Film)
     }
     // endregion
 
@@ -39,6 +43,7 @@ class FilmRecyclerViewAdapter(private var filmList: ArrayList<Film>,
             clickListener.onItemClick(film, position)
         }
         holder.setLikeClickListener(film, position)
+        //holder.setWhatchLaterClickListener(film, position)
     }
 
     override fun getItemCount(): Int = filmList.size
@@ -58,6 +63,7 @@ class FilmRecyclerViewAdapter(private var filmList: ArrayList<Film>,
         private val genreTV: TextView = view.findViewById(R.id.genre)
         private val posterIV: ImageView = view.findViewById(R.id.poster)
         private val likeIV: ImageView = view.findViewById(R.id.like)
+        private val watchLaterIV: ImageView = view.findViewById(R.id.watch_later)
 
         fun bind(item : Film) {
             nameTV.text = item.title
@@ -75,11 +81,23 @@ class FilmRecyclerViewAdapter(private var filmList: ArrayList<Film>,
             else {
                 likeIV.setImageResource(R.drawable.ic_favorite_border_light)
             }
+
+            if (item.isWatchingLater) {
+                watchLaterIV.setImageResource(R.drawable.ic_watch_later)
+                watchLaterIV.setOnClickListener{}
+            }
+            else {
+                watchLaterIV.setImageResource(R.drawable.ic_add_to_watch_later)
+                watchLaterIV.setOnClickListener{watchLaterClickListener.onIconClick(item)}
+            }
         }
 
         fun setLikeClickListener(item: Film, position: Int){
             likeIV.setOnClickListener{likeClickListener.onLikeClick(item, position)}
         }
+        /*fun setWhatchLaterClickListener(item: Film, position: Int){
+            watchLaterIV.setOnClickListener{watchLaterClickListener.onIconClick(item, position)}
+        }*/
     }
 
 }

@@ -17,7 +17,6 @@ class RoomModule(mApplication: App) {
 
     private val databaseInstance = Room
         .databaseBuilder(mApplication, RoomDB::class.java, "film_database.db")
-        // .addCallback()
         .fallbackToDestructiveMigration()
         .build()
 

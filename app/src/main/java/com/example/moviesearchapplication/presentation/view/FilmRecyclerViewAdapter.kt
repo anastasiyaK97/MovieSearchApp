@@ -98,9 +98,6 @@ class FilmRecyclerViewAdapter(private var filmList: ArrayList<Film>,
         fun setLikeClickListener(item: Film, position: Int){
             likeIV.setOnClickListener{likeClickListener.onLikeClick(item, position)}
         }
-        /*fun setWhatchLaterClickListener(item: Film, position: Int){
-            watchLaterIV.setOnClickListener{watchLaterClickListener.onIconClick(item, position)}
-        }*/
     }
 
 }

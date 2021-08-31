@@ -10,6 +10,7 @@ import com.example.moviesearchapplication.domain.usecase.FilmUseCases
 import com.example.moviesearchapplication.domain.usecase.GetFavoriteFilmListUseCase
 import com.example.moviesearchapplication.domain.usecase.GetFilmListUseCase
 import io.reactivex.Completable
+import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import retrofit2.HttpException
@@ -135,10 +136,27 @@ class FilmListViewModel @Inject constructor(
     }
 
     fun resetWatchLaterState(id: Int) {
-        filmUseCases.resetWatchLaterFilmState(id)
+        val disposable = filmUseCases.resetWatchLaterFilmState(id)
             .subscribeOn(Schedulers.io())
             .observeOn(Schedulers.newThread())
             .subscribe({}, {})
+        compositeDisposable.add(disposable)
+    }
+    fun getFilmById(id: Int): Single<Film> {
+       return filmUseCases.getFilmById(id)
+    }
+
+    fun updateFilmNotificationSettings(id: Int) {
+        val disposable = filmUseCases.getFilmById(id)
+            .flatMapCompletable { film ->
+                if (!film.isWatchingLater)
+                film.isWatchingLater = true
+                update(film)
+            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(Schedulers.newThread())
+            .subscribe({}, {})
+        compositeDisposable.add(disposable)
     }
 
 }

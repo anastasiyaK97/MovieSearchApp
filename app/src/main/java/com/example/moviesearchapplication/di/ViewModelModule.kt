@@ -21,16 +21,4 @@ class ViewModelModule {
         return MainViewModelFactory(filmUseCases, filmListUseCase, favoriteFilmListUseCase)
     }
 
-    /*@Provides
-    @ActivityScope
-    fun providesViewModel (fragment: Fragment, viewModelFactory: MainViewModelFactory): ViewModel {
-        return ViewModelProviders.of(fragment, viewModelFactory)
-    }
-    @Provides
-    @ActivityScope
-    fun providesFragment(): Fragment {
-        return
-    }*/
-
-
 }

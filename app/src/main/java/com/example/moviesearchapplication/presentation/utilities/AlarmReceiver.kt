@@ -9,17 +9,14 @@ import androidx.core.app.NotificationManagerCompat
 import com.example.moviesearchapplication.R
 import com.example.moviesearchapplication.presentation.view.FilmDetailFragment
 import com.example.moviesearchapplication.presentation.view.MainActivity
-import com.example.moviesearchapplication.presentation.view.SetUpWatchLaterFragment
-
-const val LOG_TAG = "myReceiver"
 
 class AlarmReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
 
-        if (intent.action == SetUpWatchLaterFragment.ALARM_ACTION) {
+        if (intent.action == MainActivity.ALARM_ACTION) {
             val notificationManager = NotificationManagerCompat.from(context)
-            val filmId = intent.getIntExtra(SetUpWatchLaterFragment.FILM_ID_EXTRA, -1)
+            val filmId = intent.getIntExtra(MainActivity.FILM_ID_EXTRA, -1)
 
             val notificationIntent = Intent(context, MainActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or
@@ -35,7 +32,7 @@ class AlarmReceiver : BroadcastReceiver() {
                 .setSmallIcon(R.drawable.simple_rectangle)
                 .setContentTitle(context.getString(R.string.watch_later_title))
                 .setContentText(context.getString(R.string.watch_later_text)
-                        + " ${intent.getStringExtra(SetUpWatchLaterFragment.FILM_NAME_EXTRA)}")
+                        + " ${intent.getStringExtra(MainActivity.FILM_NAME_EXTRA)}")
                 .setPriority(NotificationCompat.PRIORITY_LOW)
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true)

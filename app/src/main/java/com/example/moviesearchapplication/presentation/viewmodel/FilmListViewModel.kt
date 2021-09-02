@@ -158,18 +158,4 @@ class FilmListViewModel @Inject constructor(
             .subscribe({}, {})
         compositeDisposable.add(disposable)
     }
-
-    fun getFilmTitleById(id: Int): String {
-        val film = repository.getFilmById(id)
-        return film.title
-    }
-
-    fun updateFilmNotificationSettings(id: Int) {
-        val film = repository.getFilmById(id)
-        if (!film.isWatchingLater) {
-            film.isWatchingLater = true
-            repository.update(film)
-        }
-    }
-
 }

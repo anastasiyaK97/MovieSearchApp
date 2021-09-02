@@ -56,6 +56,7 @@ private val remoteSource: MoviesRemoteDataSource,
             .flatMap { it ->
                 pageCount.postValue(it.pagesCount)
                 Flowable.just(it.films)
+            }
 
     private fun addToCache(collection: List<Film>): Completable {
         return localSource.insertList(collection)

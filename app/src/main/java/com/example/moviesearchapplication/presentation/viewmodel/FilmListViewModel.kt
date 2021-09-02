@@ -158,5 +158,4 @@ class FilmListViewModel @Inject constructor(
             .subscribe({}, {})
         compositeDisposable.add(disposable)
     }
-
 }

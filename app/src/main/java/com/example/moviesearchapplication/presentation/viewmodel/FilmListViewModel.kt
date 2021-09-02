@@ -94,7 +94,7 @@ class FilmListViewModel @Inject constructor(
         if (currentPage == totalPages.value?:1) {
             isLastPage = true
         } else
-            if (currentPage < totalPages.value?:1) {
+        if (currentPage < totalPages.value?:1) {
             loadingLiveData.value = true
             currentPage += 1
             loadFilms()

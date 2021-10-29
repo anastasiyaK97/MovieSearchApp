@@ -7,7 +7,7 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.ViewMatchers.*
-import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.example.moviesearchapplication.R
 import com.example.moviesearchapplication.presentation.view.FilmRecyclerViewAdapter
@@ -18,14 +18,13 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-
-@RunWith(AndroidJUnit4ClassRunner::class)
+@RunWith(AndroidJUnit4::class)
 class FilmListUITest {
 
     private val LIST_ITEM_TO_CLICK = 1
 
-    @Rule
-    @JvmField
+    @get:Rule
+    //@JvmField
     var activityRule = ActivityTestRule(MainActivity::class.java)
 
     @Before

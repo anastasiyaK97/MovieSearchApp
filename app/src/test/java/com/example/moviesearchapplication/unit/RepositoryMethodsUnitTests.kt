@@ -6,11 +6,11 @@ import com.example.moviesearchapplication.data.DTO.NetworkFilm
 import com.example.moviesearchapplication.data.FilmRepository
 import com.example.moviesearchapplication.data.MoviesLocalDataSource
 import com.example.moviesearchapplication.data.MoviesRemoteDataSource
+import com.example.moviesearchapplication.data.api.FilmApiService
+import com.example.moviesearchapplication.data.db.FavoriteFilmDAO
+import com.example.moviesearchapplication.data.db.FilmDao
 import com.example.moviesearchapplication.data.model.entities.FavoriteFilm
 import com.example.moviesearchapplication.data.model.entities.Film
-import com.example.moviesearchapplication.frameworks.apiServices.FilmApiService
-import com.example.moviesearchapplication.frameworks.database.FavoriteFilmDAO
-import com.example.moviesearchapplication.frameworks.database.FilmDao
 import com.example.moviesearchapplication.rules.RxImmediateSchedulerRule
 import io.reactivex.Completable
 import io.reactivex.Flowable

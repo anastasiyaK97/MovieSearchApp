@@ -1,4 +1,4 @@
-package com.example.moviesearchapplication.frameworks.database
+package com.example.moviesearchapplication.data.db
 
 import androidx.room.Database
 import androidx.room.RoomDatabase

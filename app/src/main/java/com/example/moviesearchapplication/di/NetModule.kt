@@ -1,7 +1,7 @@
 package com.example.moviesearchapplication.di
 
 import com.example.moviesearchapplication.BuildConfig
-import com.example.moviesearchapplication.frameworks.apiServices.FilmApiService
+import com.example.moviesearchapplication.data.api.FilmApiService
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Module

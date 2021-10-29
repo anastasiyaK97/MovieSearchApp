@@ -3,7 +3,7 @@ package com.example.moviesearchapplication.unit
 import com.example.moviesearchapplication.data.DTO.FilmsWithPageCount
 import com.example.moviesearchapplication.data.DTO.NetworkFilm
 import com.example.moviesearchapplication.data.MoviesRemoteDataSource
-import com.example.moviesearchapplication.frameworks.apiServices.FilmApiService
+import com.example.moviesearchapplication.data.api.FilmApiService
 import com.example.moviesearchapplication.rules.RxImmediateSchedulerRule
 import io.reactivex.Flowable
 import org.junit.Assert

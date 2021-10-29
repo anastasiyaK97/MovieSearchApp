@@ -10,13 +10,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.moviesearchapplication.App
 import com.example.moviesearchapplication.R
 import com.example.moviesearchapplication.data.model.entities.Film
+import com.example.moviesearchapplication.databinding.FragmentFavFilmsListBinding
 import com.example.moviesearchapplication.presentation.utilities.CustomDecorator
 import com.example.moviesearchapplication.presentation.viewmodel.FilmListViewModel
 import com.example.moviesearchapplication.presentation.viewmodel.MainViewModelFactory
@@ -30,23 +30,23 @@ class FavoriteFilmsFragment : Fragment() {
     @Inject
     lateinit var viewModelFactory: MainViewModelFactory
     private val viewModel: FilmListViewModel by activityViewModels{viewModelFactory}
+    private lateinit var binding: FragmentFavFilmsListBinding
 
-    private lateinit var recycler : RecyclerView
     private var adapter: FilmRecyclerViewAdapter? = null
-    var clickListener: OnFilmClickListener? = null
-    var watchLaterClickListener: OnWatchesClickListeners? = null
+    private var clickListener: OnFilmClickListener? = null
+    private var watchLaterClickListener: OnWatchesClickListeners? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         App.instance.applicationComponent.inject(this)
-        return inflater.inflate(R.layout.fragment_fav_films_list, container, false)
+        binding = FragmentFavFilmsListBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initToolbar()
-        recycler = view.findViewById(R.id.list)
-        initRecycler(recycler)
+        initRecycler(binding.list)
 
-        viewModel.favoriteFilms.observe(viewLifecycleOwner, Observer<List<Film>>{films ->
+        viewModel.favoriteFilms.observe(viewLifecycleOwner, { films ->
             adapter?.setData(films as ArrayList<Film>)
         })
     }
@@ -80,7 +80,6 @@ class FavoriteFilmsFragment : Fragment() {
     private fun initRecycler(view: View) {
         if (view is RecyclerView) {
             with(view){
-                recycler = this
                 layoutManager = LinearLayoutManager(context)
                 setAdapter(viewModel.favoriteFilms.value?:ArrayList())
 
@@ -105,28 +104,28 @@ class FavoriteFilmsFragment : Fragment() {
             watchLaterClickListener = iconWatchLaterClickListener
         )
         adapter = filmAdapter
-        recycler.adapter = filmAdapter
+        binding.list.adapter = filmAdapter
     }
 
     // region clickListeners
     private val likeClickListener  = object : FilmRecyclerViewAdapter.OnLikeClickListener {
-        override fun onLikeClick(filmItem: Film, position: Int) {
-            filmItem.isFavorite = !filmItem.isFavorite
-            viewModel.removeFromFavorite(filmItem)
-            recycler.adapter?.notifyItemRemoved(position)
-            recycler.adapter?.notifyItemRangeChanged(
+        override fun onLikeClick(item: Film, position: Int) {
+            item.isFavorite = !item.isFavorite
+            viewModel.removeFromFavorite(item)
+            binding.list.adapter?.notifyItemRemoved(position)
+            binding.list.adapter?.notifyItemRangeChanged(
                 position,
                 viewModel.favoriteFilms.value?.size?:position - position
             )
             Snackbar.make(
-                recycler,
+                binding.list,
                 R.string.unlike_film_snackbar_text,
                 Snackbar.LENGTH_SHORT
             ).apply {
                 setAction(R.string.Undo) {
-                    filmItem.isFavorite = !filmItem.isFavorite
-                    viewModel.addToFavorite(filmItem)
-                    recycler.adapter?.notifyItemRangeChanged(
+                    item.isFavorite = !item.isFavorite
+                    viewModel.addToFavorite(item)
+                    binding.list.adapter?.notifyItemRangeChanged(
                         position, viewModel.favoriteFilms.value?.size?:position - position
                     )
                 }
@@ -135,8 +134,8 @@ class FavoriteFilmsFragment : Fragment() {
     }
 
     private val itemClickListener = object : FilmRecyclerViewAdapter.OnItemClickListener{
-        override fun onItemClick(filmItem: Film, position: Int) {
-            clickListener?.onClick(filmItem.id)
+        override fun onItemClick(item: Film, position: Int) {
+            clickListener?.onClick(item.id)
         }
     }
 

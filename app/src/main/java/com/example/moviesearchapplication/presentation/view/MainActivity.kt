@@ -17,10 +17,10 @@ import androidx.lifecycle.ViewModelProviders
 import com.example.moviesearchapplication.App
 import com.example.moviesearchapplication.BuildConfig
 import com.example.moviesearchapplication.R
+import com.example.moviesearchapplication.databinding.ActivityMainBinding
 import com.example.moviesearchapplication.presentation.utilities.AlarmReceiver
 import com.example.moviesearchapplication.presentation.viewmodel.FilmListViewModel
 import com.example.moviesearchapplication.presentation.viewmodel.MainViewModelFactory
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -33,12 +33,15 @@ class MainActivity : AppCompatActivity(),
     lateinit var viewModelFactory: MainViewModelFactory
 
     private lateinit var viewModel: FilmListViewModel
+    private lateinit var binding: ActivityMainBinding
 
     private val compositeDisposable = CompositeDisposable()
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
         App.instance.applicationComponent.inject(this)
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(FilmListViewModel::class.java)
         initToolbar()
@@ -47,11 +50,11 @@ class MainActivity : AppCompatActivity(),
     }
 
     private fun initToolbar(){
-        setSupportActionBar(findViewById(R.id.toolbar))
+        setSupportActionBar(binding.toolbar)
     }
 
     private fun initBottomNavigation(){
-        val navigate = findViewById<BottomNavigationView>(R.id.bottom_navigation)
+        val navigate = binding.bottomNavigation
         if (BuildConfig.PAID) {
             navigate.setOnNavigationItemSelectedListener{
                 when (it.itemId) {
@@ -124,7 +127,7 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun onWatchIconClick(itemId : Int) {
-        var date: Calendar = Calendar.getInstance()
+        val date: Calendar = Calendar.getInstance()
         val listener =
             DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
                 date.set(Calendar.YEAR, year)
@@ -160,9 +163,9 @@ class MainActivity : AppCompatActivity(),
 
             val calendar = Calendar.getInstance().apply {
                 timeInMillis = System.currentTimeMillis()
-                set(Calendar.YEAR, date.get(Calendar.YEAR));
-                set(Calendar.MONTH, date.get(Calendar.MONTH)); // January has value 0
-                set(Calendar.DAY_OF_MONTH, date.get(Calendar.DAY_OF_MONTH));
+                set(Calendar.YEAR, date.get(Calendar.YEAR))
+                set(Calendar.MONTH, date.get(Calendar.MONTH)) // January has value 0
+                set(Calendar.DAY_OF_MONTH, date.get(Calendar.DAY_OF_MONTH))
             }
 
             val alarmManager = this.getSystemService(Context.ALARM_SERVICE) as? AlarmManager

@@ -1,12 +1,12 @@
 package com.example.moviesearchapplication
 
 import android.app.Application
+import com.example.moviesearchapplication.data.api.FilmApiService
+import com.example.moviesearchapplication.data.db.RoomDB
 import com.example.moviesearchapplication.di.AppComponent
 import com.example.moviesearchapplication.di.AppModule
 import com.example.moviesearchapplication.di.DaggerAppComponent
 import com.example.moviesearchapplication.di.RoomModule
-import com.example.moviesearchapplication.frameworks.apiServices.FilmApiService
-import com.example.moviesearchapplication.frameworks.database.RoomDB
 import com.example.moviesearchapplication.presentation.utilities.MyNotifications
 import com.google.firebase.FirebaseApp
 import com.google.firebase.ktx.Firebase

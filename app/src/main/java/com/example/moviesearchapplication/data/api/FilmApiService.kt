@@ -1,4 +1,4 @@
-package com.example.moviesearchapplication.frameworks.apiServices
+package com.example.moviesearchapplication.data.api
 
 import com.example.moviesearchapplication.data.DTO.FilmsWithPageCount
 import com.example.moviesearchapplication.data.DTO.NetworkFilm

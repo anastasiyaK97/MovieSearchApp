@@ -1,9 +1,9 @@
 package com.example.moviesearchapplication.data
 
+import com.example.moviesearchapplication.data.db.FavoriteFilmDAO
+import com.example.moviesearchapplication.data.db.FilmDao
 import com.example.moviesearchapplication.data.model.entities.FavoriteFilm
 import com.example.moviesearchapplication.data.model.entities.Film
-import com.example.moviesearchapplication.frameworks.database.FavoriteFilmDAO
-import com.example.moviesearchapplication.frameworks.database.FilmDao
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
@@ -11,10 +11,8 @@ import javax.inject.Inject
 
 class MoviesLocalDataSource @Inject constructor(
     private val filmDAO: FilmDao,
-    private val favoriteFilmDAO: FavoriteFilmDAO) {
-
-    /*val allFilms: Flowable<List<Film>> = filmDAO.getAll()
-    val favoriteFilms: Flowable<List<FavoriteFilm>> = favoriteFilmDAO.getAll()*/
+    private val favoriteFilmDAO: FavoriteFilmDAO
+) {
 
     fun getAllMovies(): Flowable<List<Film>> = filmDAO.getAll()
     fun getAllFavoriteMovies(): Flowable<List<FavoriteFilm>> = favoriteFilmDAO.getAll()

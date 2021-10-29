@@ -1,7 +1,6 @@
 package com.example.moviesearchapplication.data
 
 import androidx.lifecycle.MutableLiveData
-import com.example.moviesearchapplication.data.DTO.DataMapper.FilmMapper
 import com.example.moviesearchapplication.data.DTO.NetworkFilm
 import com.example.moviesearchapplication.data.model.entities.FavoriteFilm
 import com.example.moviesearchapplication.data.model.entities.Film

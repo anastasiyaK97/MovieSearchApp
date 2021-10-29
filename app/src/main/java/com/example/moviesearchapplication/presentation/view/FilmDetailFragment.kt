@@ -9,11 +9,9 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import com.bumptech.glide.Glide
 import com.example.moviesearchapplication.App
 import com.example.moviesearchapplication.R
-import com.example.moviesearchapplication.data.model.entities.Film
 import com.example.moviesearchapplication.presentation.viewmodel.FilmDetailViewModel
 import com.example.moviesearchapplication.presentation.viewmodel.MainViewModelFactory
 import com.google.android.material.appbar.CollapsingToolbarLayout
@@ -23,7 +21,6 @@ class FilmDetailFragment : Fragment() {
 
     companion object {
         const val FILM_ID_EXTRA = "FILM_ID_EXTRA"
-        private const val WATCH_LATER_REQUEST = 1
         @JvmStatic
         fun newInstance(filmId: Int): FilmDetailFragment {
             val args = Bundle()
@@ -53,7 +50,7 @@ class FilmDetailFragment : Fragment() {
 
         viewModel.setFilm(filmId)
 
-        viewModel.film.observe(viewLifecycleOwner, Observer<Film>{ film ->
+        viewModel.film.observe(viewLifecycleOwner, { film ->
                     view.findViewById<TextView>(R.id.film_name).text = film?.title
                     view.findViewById<TextView>(R.id.descr).text = film?.originalTitle
 

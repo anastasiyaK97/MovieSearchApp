@@ -78,6 +78,9 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
+    buildFeatures {
+        viewBinding true
+    }
 }
 
 dependencies {
@@ -130,6 +133,7 @@ dependencies {
     implementation "androidx.room:room-rxjava2:$room_version"
     testImplementation "androidx.room:room-testing:$room_version"
 
+    def espresso_version = "3.3.0"
     testImplementation 'junit:junit:4.+'
     testImplementation "org.mockito:mockito-core:3.11.2"
     testImplementation 'org.mockito:mockito-inline:2.13.0'
@@ -137,19 +141,18 @@ dependencies {
     testImplementation 'org.robolectric:robolectric:4.2.1'
     testImplementation 'android.arch.core:core-testing:1.1.0'
     testImplementation 'androidx.test:core:1.4.0'
-    testImplementation 'androidx.test.espresso:espresso-core:+'
-    testImplementation 'com.android.support.test.espresso:espresso-contrib:3.0.2'
+    testImplementation "androidx.test.espresso:espresso-core:$espresso_version"
+    testImplementation "com.android.support.test.espresso:espresso-contrib:$espresso_version"
     testImplementation 'androidx.test:rules:1.1.1'
     testImplementation 'androidx.test:runner:1.1.1'
     debugImplementation("androidx.fragment:fragment-testing:1.3.6")
 
     def mockito_version = "3.11.0"
-    androidTestImplementation 'org.robolectric:robolectric:4.4'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test:runner:1.1.0'
     androidTestImplementation 'androidx.test:rules:1.1.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:+'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-contrib:3.0.2'
+    androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_version"
+    androidTestImplementation "com.android.support.test.espresso:espresso-contrib:$espresso_version"
 
 }
 

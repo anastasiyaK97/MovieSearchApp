@@ -1,4 +1,4 @@
-package com.example.moviesearchapplication.data.DTO.DataMapper
+package com.example.moviesearchapplication.data
 
 import com.example.moviesearchapplication.data.DTO.NetworkFilm
 import com.example.moviesearchapplication.data.model.entities.Film

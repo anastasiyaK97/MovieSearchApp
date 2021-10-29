@@ -1,7 +1,7 @@
 package com.example.moviesearchapplication.data
 
 import com.example.moviesearchapplication.data.DTO.FilmsWithPageCount
-import com.example.moviesearchapplication.frameworks.apiServices.FilmApiService
+import com.example.moviesearchapplication.data.api.FilmApiService
 import io.reactivex.Flowable
 import javax.inject.Inject
 

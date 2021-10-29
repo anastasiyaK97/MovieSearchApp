@@ -2,9 +2,9 @@ package com.example.moviesearchapplication.di
 
 import com.example.moviesearchapplication.data.MoviesLocalDataSource
 import com.example.moviesearchapplication.data.MoviesRemoteDataSource
-import com.example.moviesearchapplication.frameworks.apiServices.FilmApiService
-import com.example.moviesearchapplication.frameworks.database.FavoriteFilmDAO
-import com.example.moviesearchapplication.frameworks.database.FilmDao
+import com.example.moviesearchapplication.data.api.FilmApiService
+import com.example.moviesearchapplication.data.db.FavoriteFilmDAO
+import com.example.moviesearchapplication.data.db.FilmDao
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton

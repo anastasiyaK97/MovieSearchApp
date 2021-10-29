@@ -1,7 +1,7 @@
 package com.example.moviesearchapplication.unit
 
-import com.example.moviesearchapplication.data.DTO.DataMapper.FilmMapper
 import com.example.moviesearchapplication.data.DTO.NetworkFilm
+import com.example.moviesearchapplication.data.FilmMapper
 import com.example.moviesearchapplication.data.model.entities.Film
 import junit.framework.TestCase
 import org.hamcrest.CoreMatchers.`is`

@@ -1,4 +1,4 @@
-package com.example.moviesearchapplication.frameworks.database
+package com.example.moviesearchapplication.data.db
 
 import androidx.room.*
 import com.example.moviesearchapplication.data.model.entities.FavoriteFilm

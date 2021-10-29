@@ -11,40 +11,32 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.moviesearchapplication.App
 import com.example.moviesearchapplication.R
 import com.example.moviesearchapplication.data.model.entities.Film
+import com.example.moviesearchapplication.databinding.FragmentMainFilmsListBinding
 import com.example.moviesearchapplication.presentation.utilities.CustomDecorator
 import com.example.moviesearchapplication.presentation.viewmodel.FilmListViewModel
 import com.example.moviesearchapplication.presentation.viewmodel.MainViewModelFactory
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.remoteconfig.ktx.remoteConfig
 import javax.inject.Inject
-
-const val TAG = "LOG_TAG"
 
 class MainFilmsFragment : Fragment() {
 
     @Inject
     lateinit var viewModelFactory: MainViewModelFactory
     val viewModel: FilmListViewModel by activityViewModels{viewModelFactory}
+    private lateinit var binding: FragmentMainFilmsListBinding
 
     var clickListener: OnFilmClickListener? = null
     var watchLaterClickListener: OnWatchesClickListeners? = null
-    private lateinit var recycler: RecyclerView
     private lateinit var adapter: FilmRecyclerViewAdapter
-
-    private lateinit var mySwipeRefreshLayout: SwipeRefreshLayout
-    val remoteConfig = Firebase.remoteConfig
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -67,35 +59,33 @@ class MainFilmsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         App.instance.applicationComponent.inject(this)
-        return inflater.inflate(R.layout.fragment_main_films_list, container, false)
+        binding = FragmentMainFilmsListBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initToolbar()
-        recycler = view.findViewById(R.id.list)
-        initRecyclerView(recycler)
+        initRecyclerView(binding.list)
 
-        mySwipeRefreshLayout = view.findViewById(R.id.swiperefresh)
-
-        mySwipeRefreshLayout.post(Runnable {
-            mySwipeRefreshLayout.isRefreshing = true
+        binding.swiperefresh.post{
+            binding.swiperefresh.isRefreshing = true
             viewModel.tryLoadDataAgain()
-        })
-        mySwipeRefreshLayout.setOnRefreshListener {
+        }
+        binding.swiperefresh.setOnRefreshListener {
             viewModel.tryLoadDataAgain()
         }
 
-        viewModel.loadingLiveData.observe(viewLifecycleOwner, Observer<Boolean> { isLoading ->
+        viewModel.loadingLiveData.observe(viewLifecycleOwner, { isLoading ->
             if (isLoading == false)
-                mySwipeRefreshLayout.isRefreshing = false
+                binding.swiperefresh.isRefreshing = false
         })
 
-        viewModel.allFilms.observe(viewLifecycleOwner, Observer<List<Film>>{ films ->
+        viewModel.allFilms.observe(viewLifecycleOwner, { films ->
             adapter.setData(films as ArrayList<Film>)
         })
-        viewModel.error.observe(viewLifecycleOwner, Observer { error->
+        viewModel.error.observe(viewLifecycleOwner, { error->
             if (error != "") {
-                Snackbar.make(recycler, error, Snackbar.LENGTH_SHORT).apply {
+                Snackbar.make(binding.list, error, Snackbar.LENGTH_SHORT).apply {
                     setAction(R.string.retry) {
                         viewModel.tryLoadDataAgain()
                     }
@@ -140,9 +130,7 @@ class MainFilmsFragment : Fragment() {
 
                 addOnScrollListener(object: RecyclerView.OnScrollListener() {
                     override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                        val size = viewModel.allFilms.value?.size ?: 0
-
-                        val visibleItemCount = mLayoutManager.childCount
+                                               val visibleItemCount = mLayoutManager.childCount
                         val totalItemCount = mLayoutManager.itemCount
                         val firstVisibleItemPosition: Int =
                             mLayoutManager.findFirstVisibleItemPosition()
@@ -165,32 +153,32 @@ class MainFilmsFragment : Fragment() {
                 likeClickListener = likeClickListener,
                 watchLaterClickListener = iconWatchLaterClickListener
             )
-        recycler.adapter = filmAdapter
+        binding.list.adapter = filmAdapter
         adapter = filmAdapter
     }
 
     // region clickListeners
     private val likeClickListener  = object : FilmRecyclerViewAdapter.OnLikeClickListener {
-        override fun onLikeClick(filmItem: Film, position: Int) {
-            filmItem.isFavorite = !filmItem.isFavorite
-            viewModel.updateLikeState(filmItem)
-            recycler.adapter?.notifyItemChanged(position)
+        override fun onLikeClick(item: Film, position: Int) {
+            item.isFavorite = !item.isFavorite
+            viewModel.updateLikeState(item)
+            binding.list.adapter?.notifyItemChanged(position)
             val text =
-                if (filmItem.isFavorite) resources.getString(R.string.like_film_snackbar_text)
+                if (item.isFavorite) resources.getString(R.string.like_film_snackbar_text)
                 else resources.getString(R.string.unlike_film_snackbar_text)
-            Snackbar.make(recycler, text, Snackbar.LENGTH_SHORT).apply {
+            Snackbar.make(binding.list, text, Snackbar.LENGTH_SHORT).apply {
                 setAction(R.string.Undo) {
-                    filmItem.isFavorite = !filmItem.isFavorite
-                    viewModel.updateLikeState(filmItem)
-                    recycler.adapter?.notifyItemChanged(position)
+                    item.isFavorite = !item.isFavorite
+                    viewModel.updateLikeState(item)
+                    binding.list.adapter?.notifyItemChanged(position)
                 }
             }.show()
         }
     }
 
     private val itemClickListener = object : FilmRecyclerViewAdapter.OnItemClickListener{
-        override fun onItemClick(filmItem: Film, position: Int) {
-            clickListener?.onClick(filmItem.id)
+        override fun onItemClick(item: Film, position: Int) {
+            clickListener?.onClick(item.id)
         }
     }
     private val iconWatchLaterClickListener = object : FilmRecyclerViewAdapter.OnWatchlaterClickListener{

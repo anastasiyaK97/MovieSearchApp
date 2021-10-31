@@ -1,5 +1,5 @@
 # MovieSearchApp
-This single activity application about movie searching, created as part of Android learning. It using a clean architecture Kotlin + MVVM + Dagger 2 + RxJava + Room.
+This is a single activity application about movie searching, it was created as part of Android learning. It using a clean architecture Kotlin + MVVM + Dagger 2 + RxJava + Room.
 ## For this project were used:
 - Dagger 2 (dependencies injector)
 - MVVM design pattern
